@@ -17,10 +17,13 @@ import {
   ADVERB_MODIFIERS,
   WILL_CONTRACTIONS,
   CLAUSE_COMPLEMENT_VERBS,
+  isPastParticiple,
+  participleToActivePast,
 } from "../lexicon/closedClass.js";
 import { parseSubjectNP, parseObjectNP } from "./np.js";
 import { parseRemainder, renderAdverbArg } from "./remainder.js";
 import { casingRenderSentenceInitial } from "./casing.js";
+import { renderSimple } from "../renderer/simple.js";
 
 function lower(t: SourceToken): string {
   return t.surface.toLowerCase();
@@ -127,6 +130,87 @@ export function buildAction(subject: Entity | null, verbTokensRaw: SourceToken[]
   };
 }
 
+/** Progressive aspect: "am studying English" -> I.studying(English). The
+ * -ing form is kept as the surface verb (not converted to base), consistent
+ * with Surface Preservation — this is an Action, not a Copula. */
+function buildProgressiveAction(subject: Entity | null, tokens: SourceToken[]): Action {
+  const verbTok = tokens[0];
+  const { objects, preps, adverbs } = parseRemainder(tokens.slice(1));
+  return {
+    type: "Action",
+    subject,
+    verb: { surface: verbTok.surface, render: verbTok.surface.toLowerCase() },
+    objects,
+    preps,
+    adverbs,
+    start: subject?.start ?? verbTok.start,
+    end: tokens[tokens.length - 1].end,
+  };
+}
+
+/**
+ * Wraps `buildAction` with perfect / perfect-progressive aspect detection:
+ * "have/has + participle" -> have(subject.participle(...))
+ * "have/has + been + VERBing" -> have(been(subject.VERBing(...)))
+ * "had + [participle]" (narrow: exactly one trailing word) -> had_participle()
+ *   — a fused verb, matching the one tested conditional-clause case.
+ * Falls back to plain buildAction otherwise. Returns ASTNode (not Action)
+ * because the perfect-aspect result is a ModalExpression wrapper.
+ */
+function buildActionOrAspect(subject: Entity | null, tokens: SourceToken[]): ASTNode {
+  if (tokens.length >= 2) {
+    const t0lw = lower(tokens[0]);
+
+    if ((t0lw === "have" || t0lw === "has") && isPastParticiple(tokens[1].surface)) {
+      const rest = tokens.slice(1);
+      let content: ASTNode;
+      if (lower(rest[0]) === "been" && rest.length >= 2 && isGerund(rest[1].surface)) {
+        const progressive = buildProgressiveAction(subject, rest.slice(1));
+        const been: ModalExpression = {
+          type: "ModalExpression",
+          modal: "been",
+          render: "been",
+          content: progressive,
+          start: rest[0].start,
+          end: tokens[tokens.length - 1].end,
+          keywordStart: rest[0].start,
+          keywordEnd: rest[0].end,
+        };
+        content = been;
+      } else {
+        content = buildAction(subject, rest);
+      }
+      const have: ModalExpression = {
+        type: "ModalExpression",
+        modal: "have",
+        render: "have",
+        content,
+        start: tokens[0].start,
+        end: tokens[tokens.length - 1].end,
+        keywordStart: tokens[0].start,
+        keywordEnd: tokens[0].end,
+      };
+      return have;
+    }
+
+    if (t0lw === "had" && tokens.length === 2 && isPastParticiple(tokens[1].surface)) {
+      const fused = `had_${tokens[1].surface.toLowerCase()}`;
+      const action: Action = {
+        type: "Action",
+        subject,
+        verb: { surface: fused, render: fused },
+        objects: [],
+        preps: [],
+        adverbs: [],
+        start: tokens[0].start,
+        end: tokens[1].end,
+      };
+      return action;
+    }
+  }
+  return buildAction(subject, tokens);
+}
+
 function buildCopula(subject: Entity, remainder: SourceToken[], negated = false): ASTNode {
   const start = subject.start;
   const end = remainder[remainder.length - 1]?.end ?? subject.end;
@@ -173,9 +257,89 @@ function buildCopula(subject: Entity, remainder: SourceToken[], negated = false)
     return copula;
   }
 
+  // comparative: "Ken is taller than Tom." -> Ken = taller(than=Tom)
+  const thanIdx = remainder.findIndex((t) => lower(t) === "than");
+  if (thanIdx > 0 && thanIdx < remainder.length - 1) {
+    const adjTokens = remainder.slice(0, thanIdx);
+    const compareTokens = remainder.slice(thanIdx + 1);
+    const adjRender = adjTokens.map((t) => t.surface.toLowerCase()).join(" ");
+    const compareValue = parseObjectNP(compareTokens);
+    const wrapped: Action = {
+      type: "Action",
+      subject: null,
+      verb: { surface: adjRender, render: adjRender },
+      objects: [],
+      preps: [{ type: "PrepArg", prep: "than", value: compareValue, start: remainder[thanIdx].start, end }],
+      adverbs: [],
+      bareCall: true,
+      start: adjTokens[0].start,
+      end,
+    };
+    const copula: Copula = { type: "Copula", subject, complement: wrapped, negated, start, end };
+    return copula;
+  }
+
   const complement = parseObjectNP(remainder);
   const copula: Copula = { type: "Copula", subject, complement, negated, start, end };
   return copula;
+}
+
+const RELATIVE_PRONOUNS = new Set(["who", "that", "which"]);
+
+/**
+ * Narrow relative-clause-on-subject support, e.g.:
+ * "The man who lives in Tokyo is my brother." -> man(who.lives(in=Tokyo)) = my.brother
+ * "The book that I bought was expensive." -> book(that=I.bought(?)) = expensive
+ * Detects [head NP] [who|that|which] [relative clause tokens] [outer be/modal ...],
+ * builds a synthetic subject Entity whose render already embeds the relative
+ * clause, and returns the remaining tokens for the outer clause to continue with.
+ */
+function tryRelativeClauseSubject(tokens: SourceToken[]): { subject: Entity; mainRest: SourceToken[] } | null {
+  const relIdx = tokens.findIndex((t, i) => i > 0 && RELATIVE_PRONOUNS.has(lower(t)));
+  if (relIdx <= 0) return null;
+
+  let outerVerbIdx = -1;
+  for (let i = relIdx + 1; i < tokens.length; i++) {
+    if (BE_FORMS.has(lower(tokens[i])) || MODALS.has(lower(tokens[i]))) {
+      outerVerbIdx = i;
+      break;
+    }
+  }
+  if (outerVerbIdx === -1) return null;
+
+  const headTokens = tokens.slice(0, relIdx);
+  const relWord = lower(tokens[relIdx]);
+  const relClauseTokens = tokens.slice(relIdx + 1, outerVerbIdx);
+  const mainRest = tokens.slice(outerVerbIdx);
+  if (relClauseTokens.length === 0) return null;
+
+  const headEntity = parseObjectNP(headTokens);
+
+  let relRender: string;
+  if (relWord === "who") {
+    const whoSubject: Entity = { type: "Entity", surface: "who", render: "who", kind: "pronoun", start: tokens[relIdx].start, end: tokens[relIdx].end };
+    const relAction = buildAction(whoSubject, relClauseTokens);
+    relRender = renderSimple(relAction);
+  } else {
+    // object-relative ("that"/"which"): [SUBJ] [VERB], relativized element is the object.
+    if (relClauseTokens.length < 2) return null;
+    const subjTok = relClauseTokens[0];
+    const subjEntity: Entity = SUBJECT_PRONOUNS[lower(subjTok)]
+      ? { type: "Entity", surface: subjTok.surface, render: SUBJECT_PRONOUNS[lower(subjTok)], kind: "pronoun", start: subjTok.start, end: subjTok.end }
+      : { type: "Entity", surface: subjTok.surface, render: subjTok.surface, kind: /^[A-Z]/.test(subjTok.surface) ? "proper_noun" : "common_noun", start: subjTok.start, end: subjTok.end };
+    const verbTok = relClauseTokens[1];
+    relRender = `${relWord}=${subjEntity.render}.${verbTok.surface.toLowerCase()}(?)`;
+  }
+
+  const subject: Entity = {
+    type: "Entity",
+    surface: tokens.slice(0, outerVerbIdx).map((t) => t.surface).join(" "),
+    render: `${headEntity.render}(${relRender})`,
+    kind: "common_noun",
+    start: headTokens[0].start,
+    end: tokens[outerVerbIdx - 1].end,
+  };
+  return { subject, mainRest };
 }
 
 /**
@@ -186,6 +350,16 @@ function buildCopula(subject: Entity, remainder: SourceToken[], negated = false)
 export function parseClause(tokens: SourceToken[]): ASTNode {
   if (tokens.length === 0) {
     return { type: "Fragment", entity: { type: "Entity", surface: "", render: "?", kind: "unknown_placeholder", start: 0, end: 0 }, start: 0, end: 0 };
+  }
+
+  const relClause = tryRelativeClauseSubject(tokens);
+  if (relClause) {
+    const { subject, mainRest } = relClause;
+    const mLw0 = lower(mainRest[0]);
+    if (BE_FORMS.has(mLw0)) {
+      return buildCopula(subject, mainRest.slice(1));
+    }
+    return buildActionOrAspect(subject, mainRest);
   }
 
   // "it'll rain" -> will(it.rain()) — 'll contraction implies subject + modal "will"
@@ -272,6 +446,34 @@ export function parseClause(tokens: SourceToken[]): ASTNode {
       const modal: ModalExpression = { type: "ModalExpression", modal: "going_to", render: "going_to", content: inner, start: subject.start, end: afterBe[afterBe.length - 1].end, keywordStart: afterBe[0].start, keywordEnd: afterBe[0].end };
       return modal;
     }
+
+    // passive: "The window was broken by Ken." -> Ken.broke(window)
+    const byIdx = afterBe.findIndex((t) => lower(t) === "by");
+    if (byIdx > 0 && isPastParticiple(afterBe[0].surface) && byIdx < afterBe.length - 1) {
+      const agentTokens = afterBe.slice(byIdx + 1);
+      const agent = parseObjectNP(agentTokens);
+      const activeVerb = participleToActivePast(afterBe[0].surface);
+      const passiveAction: Action = {
+        type: "Action",
+        subject: agent,
+        verb: { surface: afterBe[0].surface, render: activeVerb },
+        objects: [subject],
+        preps: [],
+        adverbs: [],
+        start: subject.start,
+        end: afterBe[afterBe.length - 1].end,
+      };
+      return passiveAction;
+    }
+
+    // progressive: "am studying English" -> I.studying(English) — "giving" is
+    // a fixed slang idiom (it = giving(summer)), handled separately above.
+    // Requires something after the -ing word: a bare "-ing" complement alone
+    // ("this is amazing") is an adjective, not a verb being used progressively.
+    if (afterBe.length >= 2 && isGerund(afterBe[0].surface) && lower(afterBe[0]) !== "giving") {
+      return buildProgressiveAction(subject, afterBe);
+    }
+
     return buildCopula(subject, afterBe);
   }
 
@@ -285,7 +487,7 @@ export function parseClause(tokens: SourceToken[]): ASTNode {
 
   // plain modal: can, could, may, might, must, should, will, would
   if (MODALS.has(rLw0)) {
-    const inner = buildAction(subject, rest.slice(1));
+    const inner = buildActionOrAspect(subject, rest.slice(1));
     const modal: ModalExpression = { type: "ModalExpression", modal: rLw0, render: rLw0, content: inner, start: subject.start, end: rest[rest.length - 1].end, keywordStart: rest[0].start, keywordEnd: rest[0].end };
     return modal;
   }
@@ -308,9 +510,11 @@ export function parseClause(tokens: SourceToken[]): ASTNode {
   }
 
   // regular declarative verb path
-  const action = buildAction(subject, rest);
-  action.adverbs = [...leadingAdverbs, ...action.adverbs];
-  return action;
+  const built = buildActionOrAspect(subject, rest);
+  if (built.type === "Action") {
+    built.adverbs = [...leadingAdverbs, ...built.adverbs];
+  }
+  return built;
 }
 
 export function renderEntity(e: Entity): string {

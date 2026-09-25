@@ -2,7 +2,7 @@
   "corpus_version": "1.0",
   "project": "English as Code",
   "principle": "Words stay. Structure changes.",
-  "case_count": 553,
+  "case_count": 555,
   "status_semantics": {
     "golden": "Expected output is intended as a stable regression target.",
     "review": "Intentional specification probe/ambiguity/advanced case; review before hard-locking output."
@@ -6841,8 +6841,8 @@
       "expected_eac": "Ken.broke(window)",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "Preserve passive voice metadata internally.",
       "tags": "curated|advanced"
     },
@@ -6854,8 +6854,8 @@
       "expected_eac": "children.ate(cake)",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "Preserve passive voice metadata internally.",
       "tags": "curated|advanced"
     },
@@ -6867,8 +6867,8 @@
       "expected_eac": "man(who.lives(in=Tokyo)) = my.brother",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "",
       "tags": "curated|advanced"
     },
@@ -6880,8 +6880,8 @@
       "expected_eac": "book(that=I.bought(?)) = expensive",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "Relative gap mapping needs AST.",
       "tags": "curated|advanced"
     },
@@ -6893,8 +6893,8 @@
       "expected_eac": "Ken = taller(than=Tom)",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "",
       "tags": "curated|advanced"
     },
@@ -6906,8 +6906,8 @@
       "expected_eac": "this = restaurant(adjective=best)",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "",
       "tags": "curated|advanced"
     },
@@ -6919,8 +6919,8 @@
       "expected_eac": "have(I.finished(my.homework))",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "Experimental display; internal metadata required.",
       "tags": "curated|advanced"
     },
@@ -6932,8 +6932,8 @@
       "expected_eac": "I.studying(English)",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "Experimental display.",
       "tags": "curated|advanced"
     },
@@ -6945,8 +6945,8 @@
       "expected_eac": "have(been(I.studying(English)))",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "Experimental display.",
       "tags": "curated|advanced"
     },
@@ -6958,8 +6958,8 @@
       "expected_eac": "if (I.had_known()) { would(have(I.helped())) }",
       "focus": "advanced grammar probe",
       "register": "standard",
-      "confidence": "medium",
-      "status": "review",
+      "confidence": "high",
+      "status": "golden",
       "notes": "Experimental advanced scope.",
       "tags": "curated|advanced"
     },
@@ -7196,6 +7196,32 @@
       "status": "golden",
       "notes": "",
       "tags": "curated|clause"
+    },
+    {
+      "id": "EAC-GC-0554",
+      "category": "question",
+      "subcategory": "complex_wh_np",
+      "input": "What kind of area do you like the most?",
+      "expected_eac": "you.like(?, adverb=most)",
+      "focus": "complex 'what kind of NOUN' wh-phrase + superlative adverbial 'the most'",
+      "register": "standard",
+      "confidence": "high",
+      "status": "golden",
+      "notes": "",
+      "tags": "curated|question"
+    },
+    {
+      "id": "EAC-GC-0555",
+      "category": "question",
+      "subcategory": "complex_wh_np",
+      "input": "Which kind of music do you like the most?",
+      "expected_eac": "you.like(?, adverb=most)",
+      "focus": "complex 'which kind of NOUN' wh-phrase + superlative adverbial 'the most'",
+      "register": "standard",
+      "confidence": "high",
+      "status": "golden",
+      "notes": "",
+      "tags": "curated|question"
     }
   ]
 }

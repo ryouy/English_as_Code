@@ -11,6 +11,24 @@ function whPlaceholder(t: SourceToken): Entity {
   return { type: "Entity", surface: t.surface, render: "?", kind: "wh_placeholder", start: t.start, end: t.end };
 }
 
+const WH_KIND_WORDS = new Set(["kind", "type", "sort"]);
+
+/** "What kind of area do you like...?" -> merges the 4-token complex wh-phrase
+ * into one synthetic "what"-shaped token, spanning the whole phrase, so the
+ * rest of the wh-question logic (which only looks at tokens[0]) applies unchanged. */
+function mergeComplexWhPhrase(tokens: SourceToken[]): SourceToken[] {
+  if (
+    tokens.length >= 4 &&
+    (lower(tokens[0]) === "what" || lower(tokens[0]) === "which") &&
+    WH_KIND_WORDS.has(lower(tokens[1])) &&
+    lower(tokens[2]) === "of"
+  ) {
+    const merged: SourceToken = { surface: tokens[0].surface, start: tokens[0].start, end: tokens[3].end };
+    return [merged, ...tokens.slice(4)];
+  }
+  return tokens;
+}
+
 function resolveSimpleSubject(tok: SourceToken): Entity {
   const lw = lower(tok);
   if (SUBJECT_PRONOUNS[lw]) {
@@ -25,11 +43,12 @@ function resolveSimpleSubject(tok: SourceToken): Entity {
  * "?" suffix is added — wh-questions never need one since the "?" placeholder
  * already signals it; only bare do-support yes/no questions do.
  */
-export function parseQuestionOrEmbedded(tokens: SourceToken[], topLevelQuestion: boolean): ASTNode {
-  if (tokens.length === 0) {
+export function parseQuestionOrEmbedded(tokensRaw: SourceToken[], topLevelQuestion: boolean): ASTNode {
+  if (tokensRaw.length === 0) {
     return { type: "Fragment", entity: { type: "Entity", surface: "", render: "?", kind: "unknown_placeholder", start: 0, end: 0 }, start: 0, end: 0 };
   }
 
+  const tokens = mergeComplexWhPhrase(tokensRaw);
   const t0 = tokens[0];
   const lw0 = lower(t0);
 

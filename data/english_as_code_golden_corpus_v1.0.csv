@@ -524,16 +524,16 @@ EAC-GC-0522,ambiguity,review_probe,Visiting relatives can be annoying.,STRUCTURA
 EAC-GC-0523,ambiguity,review_probe,Old men and women sat down.,COORDINATION_AMBIGUOUS,must expose multiple plausible parses,standard,medium,review,old modifies men only vs men and women,curated|ambiguity
 EAC-GC-0524,ambiguity,review_probe,I know the man with the dog.,PP_ATTACHMENT_AMBIGUOUS,must expose multiple plausible parses,standard,medium,review,with dog attaches to man vs know event,curated|ambiguity
 EAC-GC-0525,ambiguity,review_probe,Flying planes can be dangerous.,STRUCTURAL_AMBIGUOUS,must expose multiple plausible parses,standard,medium,review,flying as gerund vs participle,curated|ambiguity
-EAC-GC-0526,advanced,passive,The window was broken by Ken.,Ken.broke(window),advanced grammar probe,standard,medium,review,Preserve passive voice metadata internally.,curated|advanced
-EAC-GC-0527,advanced,passive,The cake was eaten by the children.,children.ate(cake),advanced grammar probe,standard,medium,review,Preserve passive voice metadata internally.,curated|advanced
-EAC-GC-0528,advanced,relative_clause,The man who lives in Tokyo is my brother.,man(who.lives(in=Tokyo)) = my.brother,advanced grammar probe,standard,medium,review,,curated|advanced
-EAC-GC-0529,advanced,relative_clause,The book that I bought was expensive.,book(that=I.bought(?)) = expensive,advanced grammar probe,standard,medium,review,Relative gap mapping needs AST.,curated|advanced
-EAC-GC-0530,advanced,comparative,Ken is taller than Tom.,Ken = taller(than=Tom),advanced grammar probe,standard,medium,review,,curated|advanced
-EAC-GC-0531,advanced,superlative,This is the best restaurant.,this = restaurant(adjective=best),advanced grammar probe,standard,medium,review,,curated|advanced
-EAC-GC-0532,advanced,perfect,I have finished my homework.,have(I.finished(my.homework)),advanced grammar probe,standard,medium,review,Experimental display; internal metadata required.,curated|advanced
-EAC-GC-0533,advanced,progressive,I am studying English.,I.studying(English),advanced grammar probe,standard,medium,review,Experimental display.,curated|advanced
-EAC-GC-0534,advanced,perfect_progressive,I have been studying English.,have(been(I.studying(English))),advanced grammar probe,standard,medium,review,Experimental display.,curated|advanced
-EAC-GC-0535,advanced,conditional,"If I had known, I would have helped.",if (I.had_known()) { would(have(I.helped())) },advanced grammar probe,standard,medium,review,Experimental advanced scope.,curated|advanced
+EAC-GC-0526,advanced,passive,The window was broken by Ken.,Ken.broke(window),advanced grammar probe,standard,high,golden,Preserve passive voice metadata internally.,curated|advanced
+EAC-GC-0527,advanced,passive,The cake was eaten by the children.,children.ate(cake),advanced grammar probe,standard,high,golden,Preserve passive voice metadata internally.,curated|advanced
+EAC-GC-0528,advanced,relative_clause,The man who lives in Tokyo is my brother.,man(who.lives(in=Tokyo)) = my.brother,advanced grammar probe,standard,high,golden,,curated|advanced
+EAC-GC-0529,advanced,relative_clause,The book that I bought was expensive.,book(that=I.bought(?)) = expensive,advanced grammar probe,standard,high,golden,Relative gap mapping needs AST.,curated|advanced
+EAC-GC-0530,advanced,comparative,Ken is taller than Tom.,Ken = taller(than=Tom),advanced grammar probe,standard,high,golden,,curated|advanced
+EAC-GC-0531,advanced,superlative,This is the best restaurant.,this = restaurant(adjective=best),advanced grammar probe,standard,high,golden,,curated|advanced
+EAC-GC-0532,advanced,perfect,I have finished my homework.,have(I.finished(my.homework)),advanced grammar probe,standard,high,golden,Experimental display; internal metadata required.,curated|advanced
+EAC-GC-0533,advanced,progressive,I am studying English.,I.studying(English),advanced grammar probe,standard,high,golden,Experimental display.,curated|advanced
+EAC-GC-0534,advanced,perfect_progressive,I have been studying English.,have(been(I.studying(English))),advanced grammar probe,standard,high,golden,Experimental display.,curated|advanced
+EAC-GC-0535,advanced,conditional,"If I had known, I would have helped.",if (I.had_known()) { would(have(I.helped())) },advanced grammar probe,standard,high,golden,Experimental advanced scope.,curated|advanced
 EAC-GC-0536,question,be_yes_no,Are you happy?,you = happy?,be-fronted yes/no question,standard,high,golden,,curated|question
 EAC-GC-0537,question,be_yes_no,Is she tired?,she = tired?,be-fronted yes/no question,standard,high,golden,,curated|question
 EAC-GC-0538,question,be_yes_no,Was Ken busy?,Ken = busy?,be-fronted yes/no question,standard,high,golden,,curated|question
@@ -552,3 +552,5 @@ EAC-GC-0550,question,yes_no_coordination,Do you like coffee and tea?,"you.like(c
 EAC-GC-0551,complement,infinitive_extraposition,It is nice to meet you.,it = nice(meet(you)),extraposed infinitival complement of a copula adjective,standard,high,golden,,curated|complement
 EAC-GC-0552,complement,infinitive_extraposition,It is good to see you.,it = good(see(you)),extraposed infinitival complement of a copula adjective,standard,high,golden,,curated|complement
 EAC-GC-0553,clause,and_vp_shared_subject,He watches TV and plays tennis.,he.watches(TV) and he.plays(tennis),"VP coordination with shared subject, -s inflected verbs",standard,high,golden,,curated|clause
+EAC-GC-0554,question,complex_wh_np,What kind of area do you like the most?,"you.like(?, adverb=most)",complex 'what kind of NOUN' wh-phrase + superlative adverbial 'the most',standard,high,golden,,curated|question
+EAC-GC-0555,question,complex_wh_np,Which kind of music do you like the most?,"you.like(?, adverb=most)",complex 'which kind of NOUN' wh-phrase + superlative adverbial 'the most',standard,high,golden,,curated|question

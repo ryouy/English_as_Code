@@ -44,6 +44,13 @@ export function parseRemainder(tokens: SourceToken[]): RemainderResult {
       continue;
     }
 
+    // "the most" (superlative adverbial, e.g. "do you like the most?") -> adverb=most
+    if (lw === "the" && lower(tokens[pos + 1] ?? ({} as SourceToken)) === "most") {
+      adverbs.push({ type: "Adverb", surface: `${t.surface} ${tokens[pos + 1].surface}`, render: "most", start: t.start, end: tokens[pos + 1].end });
+      pos += 2;
+      continue;
+    }
+
     if (PREPOSITIONS.has(lw)) {
       pos++;
       let npEnd = pos;

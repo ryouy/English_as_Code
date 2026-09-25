@@ -30,7 +30,7 @@ npm run dev:api
 npm run golden
 ```
 
-`data/` 以下のゴールデンコーパス（553件、うちgolden 532件）に対してパーサーの出力を検証する回帰テスト。`status=golden` のケースは仕様として固定されており、失敗した場合は安易に期待値を書き換えず、パーサー側のバグかどうかをまず確認すること。
+`data/` 以下のゴールデンコーパス（555件、うちgolden 544件）に対してパーサーの出力を検証する回帰テスト。`status=golden` のケースは仕様として固定されており、失敗した場合は安易に期待値を書き換えず、パーサー側のバグかどうかをまず確認すること。
 
 ## ディレクトリ構成
 
@@ -50,5 +50,5 @@ data/            ゴールデンコーパスとその仕様書
 
 ## 既知の制限
 
-- 受動態・関係代名詞・完了/進行形・比較級などの高度な文法は未対応（コーパス上は `status=review` として区別）
-- 「What kind of area do you like the most?」のような複合疑問詞句は未対応
+- 受動態・関係代名詞・完了/進行形・比較級・「what kind of 名詞」のような複合疑問詞句には対応済み（例: `The window was broken by Ken.` → `Ken.broke(window)`）
+- 曖昧性の検出・複数解釈の提示（例: "I saw the man with a telescope." のPP付加のあいまいさ）は未対応。コーパス上は `status=review` の `ambiguity` カテゴリとして区別

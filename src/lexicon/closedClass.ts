@@ -176,6 +176,53 @@ export function isGerund(word: string): boolean {
   return /ing$/i.test(word) && word.length > 4;
 }
 
+// Past participle -> simple past active form, for passive-voice conversion
+// ("was broken" -> "broke") and for recognizing "have/had + participle" perfect
+// aspect. Regular verbs aren't listed: their participle equals the past tense
+// (cooked/cooked), so no mapping is needed for those.
+export const IRREGULAR_PAST_PARTICIPLES: Record<string, string> = {
+  broken: "broke",
+  eaten: "ate",
+  taken: "took",
+  given: "gave",
+  written: "wrote",
+  seen: "saw",
+  done: "did",
+  gone: "went",
+  known: "knew",
+  spoken: "spoke",
+  begun: "began",
+  chosen: "chose",
+  frozen: "froze",
+  stolen: "stole",
+  woken: "woke",
+  driven: "drove",
+  ridden: "rode",
+  fallen: "fell",
+  forgotten: "forgot",
+  grown: "grew",
+  worn: "wore",
+  torn: "tore",
+  drawn: "drew",
+  flown: "flew",
+  blown: "blew",
+  thrown: "threw",
+  shown: "showed",
+  found: "found",
+  sent: "sent",
+  bought: "bought",
+};
+
+export function isPastParticiple(word: string): boolean {
+  const lw = word.toLowerCase();
+  return /ed$/.test(lw) || lw in IRREGULAR_PAST_PARTICIPLES || lw === "been";
+}
+
+export function participleToActivePast(word: string): string {
+  const lw = word.toLowerCase();
+  return IRREGULAR_PAST_PARTICIPLES[lw] ?? lw;
+}
+
 // Open-class verb vocabulary observed in the golden corpus. Used only to
 // disambiguate "determiner + NOUN" (e.g. "that joke sent me") from a bare
 // demonstrative/pronoun subject directly followed by its verb (e.g. "this

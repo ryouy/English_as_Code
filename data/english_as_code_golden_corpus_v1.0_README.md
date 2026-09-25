@@ -8,9 +8,9 @@ Regression and specification corpus for the English as Code parser/AST/renderer.
 
 ## Corpus size
 
-- Total cases: **553**
-- Golden regression cases: **532**
-- Review/specification probes: **21**
+- Total cases: **555**
+- Golden regression cases: **544**
+- Review/specification probes: **11**
 
 ## Category distribution
 
@@ -26,10 +26,26 @@ Regression and specification corpus for the English as Code parser/AST/renderer.
 - negation: 12
 - possession: 9
 - preposition: 62
-- question: 26
+- question: 28
 - regional: 4
 - slang: 35
 - unknown: 6
+
+## v1.2 additions (2026-09-25)
+
+All 10 `advanced` cases (passive, relative clause, comparative, superlative,
+perfect, progressive, perfect-progressive, and the past-perfect conditional)
+were promoted from `review` to `golden`: the parser now produces their
+existing `expected_eac` deterministically, so their notation is considered
+settled rather than experimental.
+
+2 cases were added for complex wh-noun-phrase questions ("What kind of area
+do you like the most?"), which previously produced garbled output because
+the wh-word handling only recognized a single fronted wh-word.
+
+The remaining `review` cases are all `ambiguity` — genuine multi-parse
+detection (PP-attachment, lexical, coordination-scope ambiguity) is a
+different kind of feature from grammar coverage and is not yet implemented.
 
 ## v1.1 additions (2026-09-24)
 
