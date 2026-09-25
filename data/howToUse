@@ -1,0 +1,550 @@
+# English as Code — 開発指示
+
+添付した仕様書およびGolden Corpus v1.0を基に、**English as Code**を開発してください。
+
+## プロジェクトの目的
+
+このソフトウェアは、英文を入力すると、その英文の文法・依存構造をプログラミングコードのような形で可視化する英語学習ツールです。
+
+例えば、
+
+```text id="crx0f3"
+I can speak English very well.
+```
+
+を、
+
+```text id="u8vjnq"
+can(
+    I.speak(
+        English,
+        adverb=very(well)
+    )
+)
+```
+
+のように表示します。
+
+最も重要な思想は、
+
+**Words stay. Structure changes.**
+
+です。
+
+英文を別の難しい形式言語へ翻訳するのではなく、入力された英単語を可能な限りそのまま残しながら、語順だけでは分かりにくい構造・修飾関係・作用範囲をコードとして可視化してください。
+
+---
+
+## 添付ファイル
+
+### `english_as_code_golden_corpus_v1.0.jsonl`
+
+開発・自動テスト用のメインデータです。
+
+原則としてこのファイルをGolden Corpusのcanonical sourceとして使用してください。
+
+各ケースには、
+
+* input
+* expected_eac
+* category
+* subcategory
+* register
+* confidence
+* status
+* notes
+* tags
+
+などが含まれています。
+
+### `english_as_code_golden_corpus_v1.0.json`
+
+Corpus全体をJSONとして扱いたい場合に使用してください。
+
+### `english_as_code_golden_corpus_v1.0.csv`
+
+人間による確認・編集用です。
+
+Parserの入力データソースとしてはJSONLを優先してください。
+
+### `english_as_code_golden_corpus_v1.0_README.md`
+
+Corpusの目的、フィールド定義、テスト方針、スラングの扱いなどが記載されています。
+
+実装前に必ず読んでください。
+
+### `english_as_code_golden_corpus_v1.0_validation.json`
+
+Corpus生成時の検証結果です。
+
+---
+
+# Golden Corpusについて
+
+現在535ケースあります。
+
+そのうち、
+
+* `status=golden`：514ケース
+* `status=review`：21ケース
+
+です。
+
+## golden
+
+EACの現在の正式仕様として扱ってください。
+
+ParserやRendererの変更によってGolden Testが壊れた場合、単にexpected outputを書き換えてテストを通してはいけません。
+
+まず、
+
+1. Parserのバグなのか
+2. Rendererのバグなのか
+3. EAC仕様そのものを変更すべきなのか
+
+を判断してください。
+
+EAC仕様を変更する合理的理由がある場合のみGolden Corpus側を変更してください。
+
+## review
+
+仕様がまだ完全には固定されていない領域です。
+
+主に、
+
+* ambiguity
+* perfect
+* progressive
+* relative clause
+* advanced conditional
+* emerging slang
+* context-dependent expressions
+
+などが含まれます。
+
+これらについては既存expected_eacを絶対的な正解とは考えず、より一貫した表現があれば提案してください。
+
+ただし独断で全体仕様を変更せず、他のEACルールとの整合性を確認してください。
+
+---
+
+# 実装上の重要原則
+
+完成EAC文字列を直接生成するParserにはしないでください。
+
+必ず、
+
+```text id="4dk9h9"
+English
+↓
+Tokenizer
+↓
+Lexical / Phrase Resolution
+↓
+POS / Morphology
+↓
+Dependency Parsing
+↓
+Normalization
+↓
+EAC AST
+↓
+Renderer
+↓
+EAC Code
+```
+
+という責務分離をしてください。
+
+特に、
+
+**Parser → AST → Renderer**
+
+の分離は必須です。
+
+ASTをEnglish as Codeのsingle source of truthとしてください。
+
+---
+
+# 辞書
+
+英単語を大量にソースコードへハードコードしないでください。
+
+外部の信頼できるlexical resourceを利用できる設計にしてください。
+
+Core vocabulary、morphology、multiword expressions、slangなどは分離してください。
+
+概念的には、
+
+```text id="1f52kw"
+LexicalResolver
+├── CoreLexicon
+├── MorphologyLexicon
+├── MultiwordLexicon
+├── SlangLexicon
+├── RegionalLexicon
+└── ContextResolver
+```
+
+のような構造を想定しています。
+
+同じ単語が複数の品詞・意味を持つことを前提にしてください。
+
+例えば `book` を常にnounとして扱う実装は禁止です。
+
+```text id="vsl31k"
+I read a book.
+→ noun
+
+I book a hotel.
+→ verb
+```
+
+のように文脈から決定してください。
+
+---
+
+# スラング
+
+スラング対応は重要機能です。
+
+単に「slang dictionary」を一つ追加するだけにはしないでください。
+
+最低限、
+
+```text id="h9a1my"
+informal contraction
+spoken reduction
+internet abbreviation
+semantic slang
+slang phrase
+discourse marker
+regional expression
+unknown / emerging expression
+```
+
+を区別できる内部設計にしてください。
+
+例えば、
+
+```text id="t9av36"
+gonna
+→ going to
+```
+
+は解析内部ではnormalizeできます。
+
+しかし、
+
+```text id="rcvmjz"
+That song is fire.
+```
+
+の `fire` を勝手に `excellent` に置換して、
+
+```text id="vy2d9q"
+song = excellent
+```
+
+とはしないでください。
+
+EAC表示は、
+
+```text id="im76go"
+song = fire
+```
+
+のままにします。
+
+Inspector側で、
+
+```text id="2hnxsc"
+fire
+slang
+≈ excellent / exciting / very good
+```
+
+と説明します。
+
+つまり、
+
+**surface representationとnormalized/semantic representationを分離してください。**
+
+---
+
+# 未知語
+
+未知語が一つ存在するだけで解析全体を失敗させないでください。
+
+例えば、
+
+```text id="auwwb5"
+I totally glorped it.
+```
+
+で `glorped` の意味が分からなくても、
+
+```text id="1ms1r8"
+I.glorped(
+    it,
+    adverb=totally
+)
+```
+
+程度までは構造から推定できます。
+
+ただし「glorp = ○○する」という意味を勝手に生成してはいけません。
+
+**syntaxは推定してよいが、semanticsを捏造しない**ことを原則としてください。
+
+---
+
+# 曖昧性
+
+自然言語には本質的に曖昧な文があります。
+
+例えば、
+
+```text id="w8t6sk"
+I saw the man with a telescope.
+```
+
+について、Parser confidenceが近い複数の合理的解析がある場合、一つを無理に正解として固定しないでください。
+
+ASTレベルで複数candidateを保持できるようにし、UIからInterpretation A / Bを切り替えられる設計を想定してください。
+
+---
+
+# LLMについて
+
+LLMを利用すること自体は禁止しません。
+
+ただし通常英文の解析を、
+
+```text id="m08qxf"
+English → LLM → EAC文字列
+```
+
+という構造にはしないでください。
+
+LLMは、
+
+* unknown slang
+* emerging slang
+* unusual conversational English
+* unknown idiom
+* low-confidence parse
+* contextual meaning resolution
+
+などのfallbackとして使用してください。
+
+LLMから完成EAC文字列を受け取るのではなく、可能ならstructured dataとして候補解析を取得し、通常のAST Builderへ渡してください。
+
+---
+
+# UI
+
+IDE / Code EditorをイメージしたUIにしてください。
+
+基本的には、
+
+```text id="69un62"
+┌──────────────────────┬──────────────────────┐
+│ ENGLISH              │ CODE                 │
+│                      │                      │
+│ I can run quickly.   │ can(                 │
+│                      │   I.run(             │
+│                      │     adverb=quickly   │
+│                      │   )                  │
+│                      │ )                    │
+├──────────────────────┴──────────────────────┤
+│ INSPECTOR                                   │
+└─────────────────────────────────────────────┘
+```
+
+のような構造を想定しています。
+
+特に重要なのは**双方向highlight**です。
+
+English側の `quickly` にhoverすると、
+
+```text id="xenl8g"
+adverb=quickly
+```
+
+がhighlightされ、
+
+Code側の `quickly` にhoverしても元英文の `quickly` がhighlightされるようにしてください。
+
+そのためAST Nodeにはsource spanを保持してください。
+
+---
+
+# Inspector
+
+単語・phraseをクリックすると詳細情報を表示します。
+
+例：
+
+```text id="rj4p2b"
+quickly
+
+Part of speech
+Adverb
+
+Modifies
+run
+
+Code
+adverb=quickly
+
+Register
+Standard
+```
+
+スラングなら、
+
+```text id="i5focp"
+fire
+
+Usage
+Slang
+
+Role in this sentence
+Adjective-like complement
+
+Approximate meaning
+excellent / exciting / very good
+
+Register
+Very informal
+
+Confidence
+High
+```
+
+のように表示します。
+
+---
+
+# Display Mode
+
+最終的には最低限、
+
+**Simple / Structure / Grammar**
+
+の3モードを想定しています。
+
+Simple：
+
+```text id="0nhp72"
+can(I.run(adverb=quickly))
+```
+
+Structure：
+
+```text id="d6wd6n"
+can
+└── run
+    ├── subject → I
+    └── adverb → quickly
+```
+
+Grammar：
+
+```text id="7c4jld"
+I        pronoun    subject
+can      modal      auxiliary
+run      verb       predicate
+quickly  adverb     modifier
+```
+
+すべて同じASTから生成してください。
+
+---
+
+# 開発順序
+
+まず豪華なUIから作り始めないでください。
+
+以下の順序を基本としてください。
+
+```text id="8y2z2n"
+1. Corpusを読み、仕様を把握
+2. EAC AST schema
+3. Source mapping
+4. Parser interface
+5. LexicalResolver
+6. Multiword / Slang Resolver
+7. AST Builder
+8. Simple Renderer
+9. Golden Test runner
+10. Core grammar coverage改善
+11. API
+12. UI
+13. Bidirectional highlighting
+14. Inspector
+15. Structure / Grammar View
+```
+
+最初の大きなマイルストーンは、
+
+**Golden Corpusのstandard / status=goldenケースを高い割合で決定論的に通せるParser + AST + Renderer**
+
+です。
+
+---
+
+# テスト運用
+
+CIではGolden Corpusを回帰テストとして使用してください。
+
+原則：
+
+```text id="n7b8sz"
+status=golden
+→ regression failureでCI fail
+
+status=review
+→ reportするが、初期段階ではCI fail必須ではない
+```
+
+Parserのバグを修正した場合は、そのバグを再現する英文をGolden Corpusへ追加してください。
+
+これによってCorpusを徐々に成長させてください。
+
+---
+
+# 最重要事項
+
+このプロジェクトでは「文法的に最も高度な表現」を作ることが目的ではありません。
+
+例えば、
+
+```text id="eixokm"
+I can probably meet Ken in Tokyo tomorrow.
+```
+
+を、
+
+```text id="0ev87a"
+can(
+    I.meet(
+        Ken,
+        in=Tokyo,
+        adverb=[probably, tomorrow]
+    )
+)
+```
+
+と見せることで、
+
+ユーザーが英文の構造を直感的に理解できることが目的です。
+
+**分かりやすさ、一貫性、原文との対応関係を優先してください。**
+
+そして常に、
+
+> **Words stay. Structure changes.**
+
+をEnglish as Codeの設計原則として扱ってください。

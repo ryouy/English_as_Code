@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>English as Code</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>English as Code</h1>
+  </header>
+
+  <main>
+    <div class="input-row">
+      <textarea id="input" rows="3" placeholder="Type a sentence, e.g. I can probably meet Ken in Tokyo tomorrow.">I can speak English very well.</textarea>
+      <button id="analyze">Analyze</button>
+    </div>
+
+    <div class="modes">
+      <button class="mode-btn active" data-mode="simple">Simple</button>
+      <button class="mode-btn" data-mode="structure">Structure</button>
+      <button class="mode-btn" data-mode="grammar">Grammar</button>
+    </div>
+
+    <div class="panes">
+      <section class="pane">
+        <h2>English</h2>
+        <div id="englishPane" class="code-block"></div>
+      </section>
+      <section class="pane">
+        <h2>Code</h2>
+        <div id="codePane" class="code-block"></div>
+      </section>
+    </div>
+
+    <section class="inspector">
+      <h2>Inspector</h2>
+      <div id="inspectorBody">Click or hover a word to inspect it.</div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

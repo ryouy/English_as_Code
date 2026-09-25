@@ -1,0 +1,2109 @@
+# English as Code
+
+## Detailed Product & Engineering Specification v1.0
+
+---
+
+# 0. プロジェクト概要
+
+## 0.1 プロダクト名
+
+仮称：
+
+**English as Code**
+
+名称は後から変更可能とし、コードベースでは `english-as-code` / `EAC` を使用する。
+
+---
+
+## 0.2 コンセプト
+
+英文を入力すると、その英文に隠れている文法的・意味的な依存構造を、プログラミングコードのような記法へ変換して表示する英語学習ソフトウェア。
+
+例：
+
+Input:
+
+```text
+I can speak English very well.
+```
+
+Output:
+
+```text
+can(
+    I.speak(
+        English,
+        adverb=very(well)
+    )
+)
+```
+
+Input:
+
+```text
+I went to Tokyo with Ken yesterday.
+```
+
+Output:
+
+```text
+I.went(
+    to=Tokyo,
+    with=Ken,
+    adverb=yesterday
+)
+```
+
+Input:
+
+```text
+That is Ken.
+```
+
+Output:
+
+```text
+that = Ken
+```
+
+---
+
+# 1. プロダクトの目的
+
+本ソフトウェアは英文を別の難しい形式言語へ翻訳するものではない。
+
+目的は、
+
+**「英単語をできるだけそのまま残し、語順の奥に隠れている構造だけをコードとして可視化する」**
+
+ことである。
+
+ユーザーが、
+
+```text
+I can probably meet Ken in Tokyo tomorrow.
+```
+
+と
+
+```text
+can(
+    I.meet(
+        Ken,
+        in=Tokyo,
+        adverb=[probably, tomorrow]
+    )
+)
+```
+
+を比較することで、
+
+* `I` が `meet` の主体
+* `Ken` が `meet` の対象
+* `in Tokyo` が `meet` に付属
+* `probably` と `tomorrow` が副詞的要素
+* `can` が命題全体を包む
+
+ことを視覚的に理解できるようにする。
+
+---
+
+# 2. 最重要設計原則
+
+## 2.1 Surface Preservation Principle
+
+入力英文に存在する単語は可能な限り保持する。
+
+避ける表現：
+
+```text
+tense=past
+ability=true
+manner=quickly
+location=Tokyo
+aspect=progressive
+```
+
+原則として以下を優先する。
+
+```text
+I.played()
+can(I.play())
+I.run(adverb=quickly)
+I.go(to=Tokyo)
+```
+
+つまり、システム側が勝手に抽象概念を大量に追加しない。
+
+---
+
+## 2.2 Structural Visualization Principle
+
+変換対象は「単語」ではなく「関係」。
+
+例えば、
+
+```text
+I like dogs.
+```
+
+は、
+
+```text
+I.like(dogs)
+```
+
+となる。
+
+`.`, `()`, `=`, `[]`, `{}`, `!`, `?` を主な構造記号として使用する。
+
+---
+
+## 2.3 Deterministic First
+
+同じ英文は原則として毎回同じ結果を返す。
+
+通常解析をLLMへ丸投げしない。
+
+基本パイプライン：
+
+```text
+Input
+ ↓
+Tokenizer
+ ↓
+Lexical Analysis
+ ↓
+POS / Morphology
+ ↓
+Dependency Parsing
+ ↓
+Phrase / Slang Recognition
+ ↓
+Normalization
+ ↓
+EAC AST
+ ↓
+Renderer
+```
+
+LLMは低confidence・未知表現などに限定したfallbackとする。
+
+---
+
+# 3. 基本EAC記法
+
+## 3.1 Action
+
+```text
+Subject.Verb(Object)
+```
+
+例：
+
+```text
+I like dogs.
+→ I.like(dogs)
+
+Ken plays tennis.
+→ Ken.plays(tennis)
+
+She studied English.
+→ she.studied(English)
+```
+
+原則として入力に現れた動詞活用を保持する。
+
+---
+
+# 4. be動詞
+
+基本：
+
+```text
+A be B
+→ A = B
+```
+
+例：
+
+```text
+That is Ken.
+→ that = Ken
+
+Ken is happy.
+→ Ken = happy
+
+Ken is a student.
+→ Ken = student
+```
+
+内部ASTではcopula情報を保持する。
+
+表示上は簡潔さを優先して `=` を使用する。
+
+---
+
+# 5. Object
+
+```text
+I like your T-shirt.
+```
+
+↓
+
+```text
+I.like(your.T-shirt)
+```
+
+複数objectを必要とする構文では、依存関係を判定して表現する。
+
+例：
+
+```text
+I gave Ken a book.
+```
+
+推奨：
+
+```text
+I.gave(
+    book,
+    to=Ken
+)
+```
+
+ただし原文では `to` が省略されているため、UIでは `to` が「システムによる補完」であることを視覚的に区別する。
+
+---
+
+# 6. Adjective
+
+基本：
+
+```text
+noun(adjective=value)
+```
+
+例：
+
+```text
+a red car
+→ car(adjective=red)
+```
+
+複数：
+
+```text
+a beautiful red car
+→ car(adjective=[beautiful, red])
+```
+
+文：
+
+```text
+I bought a beautiful red car.
+```
+
+↓
+
+```text
+I.bought(
+    car(adjective=[beautiful, red])
+)
+```
+
+---
+
+# 7. Adverb
+
+基本：
+
+```text
+adverb=value
+```
+
+例：
+
+```text
+I run quickly.
+→ I.run(adverb=quickly)
+
+I often run.
+→ I.run(adverb=often)
+
+I ran yesterday.
+→ I.ran(adverb=yesterday)
+```
+
+複数：
+
+```text
+I ran quickly yesterday.
+```
+
+↓
+
+```text
+I.ran(
+    adverb=[quickly, yesterday]
+)
+```
+
+副詞を修飾する副詞：
+
+```text
+I ran very quickly.
+```
+
+↓
+
+```text
+I.ran(
+    adverb=very(quickly)
+)
+```
+
+同様に、
+
+```text
+really slowly
+→ really(slowly)
+
+extremely carefully
+→ extremely(carefully)
+```
+
+とする。
+
+---
+
+# 8. Preposition
+
+前置詞は原則としてその単語自体をparameter名にする。
+
+```text
+I went to Tokyo.
+→ I.went(to=Tokyo)
+
+I came from Japan.
+→ I.came(from=Japan)
+
+I played with Ken.
+→ I.played(with=Ken)
+
+I live in Japan.
+→ I.live(in=Japan)
+```
+
+複数：
+
+```text
+I went to Tokyo with Ken yesterday.
+```
+
+↓
+
+```text
+I.went(
+    to=Tokyo,
+    with=Ken,
+    adverb=yesterday
+)
+```
+
+---
+
+# 9. Modal verbs
+
+助動詞は命題をwrapperとして包む。
+
+```text
+I can swim.
+→ can(I.swim())
+
+I must go.
+→ must(I.go())
+
+I may go.
+→ may(I.go())
+
+I should study.
+→ should(I.study())
+
+I will go.
+→ will(I.go())
+
+I might go.
+→ might(I.go())
+
+I could help you.
+→ could(I.help(you))
+```
+
+基本：
+
+```text
+modal(expression)
+```
+
+---
+
+# 10. Negation
+
+否定演算子：
+
+```text
+!
+```
+
+例：
+
+```text
+I don't like coffee.
+→ !I.like(coffee)
+```
+
+```text
+I can't swim.
+→ !can(I.swim())
+```
+
+ただし否定スコープをAST上で必ず保持する。
+
+以下は同一視しない。
+
+```text
+must(!I.go())
+```
+
+と
+
+```text
+!must(I.go())
+```
+
+自然言語上のscope ambiguityがある場合は、confidenceを下げる。
+
+---
+
+# 11. Questions
+
+## Yes/No
+
+```text
+Do you like coffee?
+→ you.like(coffee)?
+```
+
+## Wh
+
+```text
+What do you like?
+→ you.like(?)
+
+Where does Ken live?
+→ Ken.live(where=?)
+
+When did she arrive?
+→ she.arrive(when=?)
+
+Who broke this?
+→ ?.broke(this)
+```
+
+疑問文で発生するdo-supportは意味構造の中心ではないため、通常のEAC表示から除外する。
+
+原文情報としてASTには保持する。
+
+---
+
+# 12. Possession
+
+所有関係には `.` を使用する。
+
+```text
+my car
+→ my.car
+
+your T-shirt
+→ your.T-shirt
+
+Ken's car
+→ Ken.car
+
+my father's car
+→ my.father.car
+```
+
+例：
+
+```text
+I like my father's car.
+```
+
+↓
+
+```text
+I.like(my.father.car)
+```
+
+---
+
+# 13. Infinitive / Gerund
+
+ActionをActionのargumentとして扱えるようにする。
+
+```text
+I want to play tennis.
+```
+
+↓
+
+```text
+I.want(
+    I.play(tennis)
+)
+```
+
+```text
+I enjoy playing tennis.
+```
+
+↓
+
+```text
+I.enjoy(
+    I.play(tennis)
+)
+```
+
+ただしASTには、
+
+```text
+form: infinitive
+```
+
+または
+
+```text
+form: gerund
+```
+
+を保持する。
+
+これはUI上のGrammar Inspectorで利用するが、Simple Code Viewには原則表示しない。
+
+---
+
+# 14. Conjunction
+
+## if
+
+```text
+If it rains, I will stay home.
+```
+
+↓
+
+```text
+if (it.rains()) {
+    will(I.stay(home))
+}
+```
+
+## because
+
+```text
+I stayed home because it rained.
+```
+
+↓
+
+```text
+I.stayed(home)
+because(
+    it.rained()
+)
+```
+
+## and
+
+```text
+I ate pizza and drank beer.
+```
+
+↓
+
+```text
+I.ate(pizza)
+and
+I.drank(beer)
+```
+
+## but
+
+contrast relationとしてASTに保存する。
+
+Simple View：
+
+```text
+I.was(tired)
+but
+I.studied()
+```
+
+必要に応じて将来的により自然な表現へ改善する。
+
+---
+
+# 15. Progressive / Perfect
+
+ここでは `aspect=...` をSimple Viewに露出させない。
+
+例：
+
+```text
+I am playing tennis.
+```
+
+ASTには、
+
+```text
+verb: play
+surface: playing
+progressive: true
+```
+
+を保存する。
+
+Simple Viewの具体的な表記は実装検証を通じて決定する。
+
+候補：
+
+```text
+I.playing(tennis)
+```
+
+完了：
+
+```text
+I have finished my homework.
+```
+
+についても `perfect=true` を内部情報として保持するが、
+
+```text
+aspect=perfect
+```
+
+を初心者向けCode Viewに直接表示しない。
+
+この領域はv1.0では「内部解析対応・表示仕様experimental」とする。
+
+---
+
+# 16. Lexical Database
+
+## 16.1 基本方針
+
+英単語一覧を手動管理しない。
+
+Core Lexiconには大規模な外部lexical resourceを使用する。
+
+候補：
+
+* Open English WordNet
+* Princeton WordNet由来データ
+* Wiktionary由来の利用可能なlexical data
+* POS/morphological dataを提供するNLPモデル
+
+外部データについては必ずライセンスを確認し、ソース名・バージョン・ライセンスを記録する。
+
+---
+
+# 17. Lexical Entry Schema
+
+単語を単一品詞へ固定しない。
+
+例：
+
+```json
+{
+  "lemma": "book",
+  "forms": [
+    "book",
+    "books",
+    "booked",
+    "booking"
+  ],
+  "possible_pos": [
+    "noun",
+    "verb"
+  ],
+  "source": "open-english-wordnet"
+}
+```
+
+文脈によって、
+
+```text
+I read a book.
+```
+
+ではnoun、
+
+```text
+I book a hotel.
+```
+
+ではverbと判定する。
+
+最終POSはdictionary lookupではなくcontextual parserが決定する。
+
+---
+
+# 18. Multiword Expression
+
+単語単位解析より先に、既知の複数語表現を検出する。
+
+例：
+
+```text
+give up
+look after
+hang out
+figure out
+pick up
+take care of
+as soon as
+even though
+```
+
+これらを単純に独立単語へ分割して意味構造を壊さない。
+
+内部的には：
+
+```json
+{
+  "surface": "give up",
+  "type": "phrasal_verb",
+  "head": "give",
+  "particle": "up"
+}
+```
+
+のように保持する。
+
+---
+
+# 19. Slang System
+
+スラング対応は独立したサブシステムとして設計する。
+
+「slang」という一種類のタグだけで済ませない。
+
+最低でも以下を区別する。
+
+```text
+informal_contraction
+spoken_reduction
+internet_abbreviation
+slang_word
+slang_phrase
+discourse_marker
+regional_form
+vulgar_expression
+emerging_unknown
+```
+
+---
+
+# 20. Informal Contractions
+
+例：
+
+```text
+gonna
+wanna
+gotta
+lemme
+gimme
+kinda
+sorta
+dunno
+ain't
+y'all
+```
+
+Entry例：
+
+```json
+{
+  "surface": "gonna",
+  "category": "informal_contraction",
+  "normalized": "going to",
+  "register": "very_casual",
+  "confidence": 1.0
+}
+```
+
+Input：
+
+```text
+I'm gonna go home.
+```
+
+解析時には、
+
+```text
+gonna
+→ going to
+```
+
+を利用する。
+
+ただしユーザーの入力文字列 `gonna` は絶対に消さない。
+
+UI：
+
+```text
+gonna
+
+Informal spoken form
+≈ going to
+```
+
+Code Viewでは意味構造を優先して変換する。
+
+---
+
+# 21. Internet Abbreviations
+
+対応例：
+
+```text
+idk
+imo
+imho
+tbh
+ngl
+fr
+frfr
+btw
+rn
+irl
+lmao
+lol
+wtf
+omg
+afaik
+fyi
+brb
+smh
+```
+
+Entry：
+
+```json
+{
+  "surface": "ngl",
+  "category": "internet_abbreviation",
+  "expansion": "not gonna lie",
+  "register": "internet_casual"
+}
+```
+
+重要：
+
+略語を機械的にsentence grammarへ組み込まない。
+
+例えば、
+
+```text
+ngl this movie was amazing
+```
+
+の `ngl` は主命題を修飾するdiscourse expressionとして扱う。
+
+AST：
+
+```text
+DiscourseMarker(
+    marker="ngl",
+    content=...
+)
+```
+
+Simple View候補：
+
+```text
+ngl(
+    movie = amazing
+)
+```
+
+---
+
+# 22. Semantic Slang
+
+既存の標準語が別の意味で使用されるケース。
+
+例：
+
+```text
+fire
+sick
+cold
+dead
+cooked
+goat
+salty
+lit
+based
+cringe
+cap
+```
+
+ここではsurface wordを変更しない。
+
+Input：
+
+```text
+That song is fire.
+```
+
+Output：
+
+```text
+song = fire
+```
+
+Inspector：
+
+```text
+fire
+
+POS in this sentence:
+adjective-like complement
+
+Usage:
+slang
+
+Approximate meaning:
+excellent / exciting / very good
+
+Confidence:
+high
+```
+
+つまり、
+
+```text
+song = excellent
+```
+
+へ勝手に置換しない。
+
+**コードには原文を残し、意味説明をInspector側へ出す。**
+
+---
+
+# 23. Slang Phrases
+
+例：
+
+```text
+hit me up
+hang out
+no cap
+my bad
+I'm down
+I'm cooked
+let him cook
+touch grass
+spill the tea
+shoot your shot
+```
+
+phrase matcherを用意する。
+
+例：
+
+```json
+{
+  "surface": "hit me up",
+  "category": "slang_phrase",
+  "canonical_meaning": "contact me",
+  "register": "casual",
+  "compositional": false
+}
+```
+
+`compositional=false` は重要。
+
+`hit + me + up` を通常の意味で解析してはいけない。
+
+---
+
+# 24. Context-dependent Slang
+
+同じ単語でも意味が変わる。
+
+```text
+I'm cooked.
+```
+
+と
+
+```text
+The chicken is cooked.
+```
+
+は全く違う。
+
+したがってdictionary entryは、
+
+```text
+cooked = slang
+```
+
+と固定してはいけない。
+
+候補：
+
+```json
+{
+  "surface": "cooked",
+  "senses": [
+    {
+      "type": "standard",
+      "meaning": "prepared by heating"
+    },
+    {
+      "type": "slang",
+      "meaning": "in serious trouble / exhausted / finished"
+    }
+  ]
+}
+```
+
+contextual classifierがsenseを選択する。
+
+---
+
+# 25. Slang Confidence
+
+スラング解析にはconfidenceを必須とする。
+
+```text
+HIGH
+MEDIUM
+LOW
+UNKNOWN
+```
+
+UIでは通常HIGH/MEDIUMは静かに表示する。
+
+LOWの場合：
+
+```text
+Possible slang usage
+```
+
+と明示する。
+
+UNKNOWNの場合は意味を捏造しない。
+
+```text
+Unknown / emerging expression
+```
+
+と表示する。
+
+---
+
+# 26. Emerging Slang
+
+ネットスラングは静的辞書だけでは追従できない。
+
+したがって、
+
+```text
+Local Slang DB
+        ↓
+Known?
+ ┌──────┴──────┐
+YES             NO
+ │               │
+use entry    contextual analysis
+                 │
+             confidence?
+          ┌──────┴───────┐
+        enough           low
+          │               │
+       suggest          unknown
+```
+
+というfallbackを持つ。
+
+将来的には外部ソースまたはLLMを使用可能。
+
+ただしLLM推定結果は必ず、
+
+```text
+source = inferred
+```
+
+としてdictionary-confirmed resultと区別する。
+
+---
+
+# 27. Slang Source Management
+
+スラング辞書は出典を持つ。
+
+Entry例：
+
+```json
+{
+  "surface": "no cap",
+  "meaning": "seriously / not lying",
+  "category": "slang_phrase",
+  "register": "internet_casual",
+  "sources": [
+    {
+      "provider": "...",
+      "retrieved_at": "..."
+    }
+  ],
+  "last_verified": "...",
+  "confidence": 0.95
+}
+```
+
+ユーザー投稿型辞書を唯一のtruth sourceにしない。
+
+複数ソースまたはcontext evidenceによる検証を想定する。
+
+---
+
+# 28. Offensive / Vulgar Language
+
+罵倒語・性的表現・差別語なども、英文解析という目的上は語彙として認識可能にする。
+
+ただし、
+
+```text
+register: vulgar
+register: offensive
+register: derogatory
+```
+
+等のusage metadataを付与する。
+
+意味を隠して解析不能にするのではなく、
+
+**「何を意味し、どの程度強い表現なのか」**
+
+を教育的に説明できるデータ構造を用意する。
+
+---
+
+# 29. Regional English
+
+以下もSlang Layerに近い補助Lexiconで扱う。
+
+```text
+US
+UK
+Australia
+Canada
+Ireland
+New Zealand
+regional dialects
+```
+
+例：
+
+```text
+mate
+cheers
+bloody
+y'all
+ain't
+reckon
+```
+
+Entry：
+
+```json
+{
+  "surface": "y'all",
+  "normalized": "you all",
+  "region": ["US"],
+  "register": "informal"
+}
+```
+
+地域差とフォーマル度は別フィールドにする。
+
+---
+
+# 30. Source Architecture
+
+辞書を一枚岩にしない。
+
+```text
+LexicalResolver
+│
+├── CoreLexicon
+│     └── standard English
+│
+├── MorphologyLexicon
+│     └── inflections
+│
+├── MultiwordLexicon
+│     └── phrasal verbs / idioms
+│
+├── SlangLexicon
+│     └── slang / internet
+│
+├── RegionalLexicon
+│     └── regional forms
+│
+└── ContextResolver
+      └── final sense/POS selection
+```
+
+---
+
+# 31. EAC AST
+
+文字列を直接生成してはいけない。
+
+全解析結果はまずASTへ変換する。
+
+例：
+
+```text
+I can speak English very well.
+```
+
+概念例：
+
+```json
+{
+  "type": "ModalExpression",
+  "surface": "can",
+  "modal": "can",
+  "content": {
+    "type": "Action",
+    "subject": {
+      "type": "Entity",
+      "surface": "I"
+    },
+    "verb": {
+      "surface": "speak",
+      "lemma": "speak"
+    },
+    "objects": [
+      {
+        "type": "Entity",
+        "surface": "English"
+      }
+    ],
+    "adverbs": [
+      {
+        "surface": "well",
+        "modifiers": [
+          {
+            "surface": "very"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Renderer：
+
+```text
+can(
+    I.speak(
+        English,
+        adverb=very(well)
+    )
+)
+```
+
+---
+
+# 32. Source Mapping
+
+ASTの全Nodeは入力英文の文字位置を保持する。
+
+例：
+
+```json
+{
+  "surface": "quickly",
+  "start": 6,
+  "end": 13
+}
+```
+
+これにより、
+
+```text
+English → AST → Code
+```
+
+の対応関係を保持する。
+
+これは双方向highlightに必須。
+
+---
+
+# 33. Confidence
+
+各解析Nodeは必要に応じてconfidenceを持てる。
+
+```json
+{
+  "analysis_confidence": 0.97
+}
+```
+
+特に、
+
+* POS ambiguity
+* attachment ambiguity
+* pronoun reference
+* slang sense
+* idiom recognition
+
+では重要。
+
+低confidenceを「確定情報」のように表示しない。
+
+---
+
+# 34. UI構成
+
+Desktop：
+
+```text
+┌────────────────────────────────────────────────────┐
+│ English as Code                                    │
+├───────────────────────┬────────────────────────────┤
+│ ENGLISH               │ CODE                       │
+│                       │                            │
+│ I can speak English   │ can(                       │
+│ very well.            │   I.speak(                 │
+│                       │     English,               │
+│                       │     adverb=very(well)      │
+│                       │   )                        │
+│                       │ )                          │
+├───────────────────────┴────────────────────────────┤
+│ INSPECTOR                                          │
+└────────────────────────────────────────────────────┘
+```
+
+---
+
+# 35. Syntax Highlighting
+
+最低限：
+
+```text
+noun            one color
+pronoun         one color
+verb            one color
+adjective       one color
+adverb          one color
+modal           one color
+preposition     one color
+conjunction     one color
+slang           additional marker
+unknown         neutral
+```
+
+具体的な色値はUI設計時に決定する。
+
+重要なのは、
+
+**同一tokenは英文側とCode側で同一色を使用すること。**
+
+---
+
+# 36. Slang Visualization
+
+スラングは品詞色を上書きしない。
+
+例えば `fire` がadjective-likeなら、形容詞としての色を維持しつつ、
+
+* 下線
+* badge
+* dot
+* border
+
+等でSlang属性を追加表示する。
+
+つまり、
+
+```text
+POS = adjective-like
+REGISTER = slang
+```
+
+を同時に表現できるようにする。
+
+---
+
+# 37. Bidirectional Highlight
+
+最重要UI機能。
+
+英文側のtokenをhover：
+
+```text
+quickly
+```
+
+↓
+
+Code側：
+
+```text
+adverb=quickly
+```
+
+をhighlight。
+
+逆方向も同様。
+
+Phraseの場合：
+
+```text
+hit me up
+```
+
+全体をhoverすると、対応する単一semantic unitをhighlightする。
+
+---
+
+# 38. Inspector
+
+tokenクリックで詳細を表示。
+
+標準語：
+
+```text
+quickly
+
+Part of speech
+Adverb
+
+Lemma
+quickly
+
+Modifies
+run
+
+Code
+adverb=quickly
+
+Register
+Standard
+```
+
+スラング：
+
+```text
+fire
+
+Usage
+Slang
+
+Role here
+Adjective-like complement
+
+Approximate meaning
+excellent / exciting / very good
+
+Register
+Very informal
+
+Confidence
+High
+```
+
+---
+
+# 39. Display Modes
+
+最低3モード。
+
+## SIMPLE
+
+```text
+can(I.run(adverb=quickly))
+```
+
+初心者向け。
+
+## STRUCTURE
+
+```text
+can
+└── run
+    ├── subject → I
+    └── adverb → quickly
+```
+
+## GRAMMAR
+
+```text
+I        pronoun      subject
+can      modal        auxiliary
+run      verb         predicate
+quickly  adverb       modifier
+```
+
+同一ASTから生成する。
+
+---
+
+# 40. Unknown Words
+
+未知語だからといって解析全体を失敗させない。
+
+例えば：
+
+```text
+I totally glorped it.
+```
+
+`glorped` が未知でも、構造上verbである可能性が高ければ、
+
+```text
+I.glorped(
+    it,
+    adverb=totally
+)
+```
+
+まで生成可能にする。
+
+Inspector：
+
+```text
+glorped
+
+Unknown lexical item
+
+Probable role
+Verb
+
+Confidence
+Medium
+```
+
+意味は捏造しない。
+
+これは新語・固有名詞・スラングへの耐性として非常に重要。
+
+---
+
+# 41. Proper Nouns
+
+辞書に存在しないものを即Unknownにしない。
+
+大文字・NER・contextを使って、
+
+```text
+Ken
+Tokyo
+OpenAI
+Minecraft
+```
+
+などをproper nounとして認識する。
+
+---
+
+# 42. Ambiguity
+
+一つの英文に複数の合理的解析が存在する場合に対応する。
+
+例：
+
+```text
+I saw the man with a telescope.
+```
+
+「望遠鏡を持った男」と「望遠鏡を使って見た」の両方があり得る。
+
+confidenceが近い場合、
+
+```text
+Interpretation A
+Interpretation B
+```
+
+をユーザーが切り替えられる設計にする。
+
+勝手に一つを唯一の正解として扱わない。
+
+---
+
+# 43. LLM Fallback
+
+LLMを使用可能なのは主に：
+
+* emerging slang
+* unknown idiom
+* context-dependent slang
+* parser confidence低下
+* highly conversational English
+* fragmented social-media English
+
+など。
+
+LLMから直接EAC文字列を受け取らない。
+
+必ずstructured outputとして、
+
+```json
+{
+  "candidate_pos": "...",
+  "candidate_meaning": "...",
+  "candidate_relation": "...",
+  "confidence": 0.0
+}
+```
+
+等を取得し、既存AST builderへ渡す。
+
+Rendererの責務をLLMに渡さない。
+
+---
+
+# 44. Caching
+
+外部辞書/API結果はローカルまたはserver-side cacheへ保存。
+
+毎回同じ単語について外部問い合わせしない。
+
+cache key例：
+
+```text
+lexical:quickly
+slang:no_cap
+phrase:hit_me_up
+```
+
+データにはsource versionとretrieval dateを保持する。
+
+---
+
+# 45. Offline Degradation
+
+ネット接続がなくても、
+
+* 基本英単語
+* Core POS解析
+* 基本文法
+* 頻出スラング
+* EAC Renderer
+
+は動作する設計を目指す。
+
+ネット接続は追加辞書検索や未知スラング解決のために使用する。
+
+---
+
+# 46. 推奨技術構成
+
+Web applicationとして実装する。
+
+候補：
+
+Frontend:
+
+```text
+TypeScript
+React / Next.js
+```
+
+Parser backend:
+
+```text
+Python
+FastAPI
+spaCy等のdependency parser
+```
+
+Data:
+
+```text
+SQLite → productionではPostgreSQL等
+```
+
+Lexical cache:
+
+```text
+local DB / Redis等
+```
+
+ただし初期MVPでは過剰なインフラを避ける。
+
+p5.js版はconcept prototypeとして扱い、本番UIの必須技術にはしない。
+
+---
+
+# 47. モジュール構成
+
+```text
+src/
+├── tokenizer/
+├── parser/
+├── morphology/
+├── dependency/
+├── lexicon/
+│   ├── core/
+│   ├── slang/
+│   ├── regional/
+│   └── phrases/
+├── normalization/
+├── ast/
+├── renderer/
+│   ├── simple/
+│   ├── structure/
+│   └── grammar/
+├── confidence/
+├── inspector/
+└── ui/
+```
+
+責務を分離する。
+
+---
+
+# 48. Testing Strategy
+
+「単語数」より**代表英文corpus**を重視する。
+
+最低でも以下をテストする。
+
+### Basic
+
+```text
+That is Ken.
+I like dogs.
+Ken is happy.
+I went to Tokyo.
+```
+
+### Modifier
+
+```text
+I run quickly.
+I ran very quickly.
+I bought a beautiful red car.
+```
+
+### Modal
+
+```text
+I can swim.
+I should study.
+I may go.
+I will go.
+```
+
+### Question
+
+```text
+Do you like coffee?
+What do you like?
+Where does Ken live?
+```
+
+### Negative
+
+```text
+I don't like coffee.
+I can't swim.
+```
+
+### Nested
+
+```text
+I want to play tennis.
+I enjoy playing tennis.
+```
+
+### Complex
+
+```text
+If it rains, I will stay home.
+I went to Tokyo with Ken yesterday.
+```
+
+### Informal
+
+```text
+I'm gonna go home.
+I wanna see it.
+Lemme know.
+```
+
+### Internet
+
+```text
+ngl this is good
+idk what he wants
+fr that was crazy
+```
+
+### Semantic slang
+
+```text
+That song is fire.
+I'm cooked.
+No cap, that was insane.
+```
+
+### Unknown
+
+```text
+I totally glorped it.
+```
+
+### Ambiguous
+
+```text
+I saw the man with a telescope.
+```
+
+---
+
+# 49. Golden Tests
+
+各代表英文について期待ASTと期待EAC outputを固定する。
+
+例：
+
+```text
+INPUT:
+I can swim.
+
+EXPECTED:
+can(I.swim())
+```
+
+Parserや辞書を更新した際、既存変換が意図せず変化していないかCIで検証する。
+
+最低500文、将来的には数千文のgolden corpusを構築する。
+
+---
+
+# 50. MVP
+
+最初から全英語を完璧に解析しようとしない。
+
+MVPでは：
+
+* simple declarative sentences
+* be
+* common verbs
+* objects
+* adjective
+* adverb
+* preposition
+* modal
+* negation
+* simple questions
+* possession
+* common infinitives
+* common contractions
+* basic slang
+* syntax highlighting
+* hover mapping
+* Inspector
+
+まで実装する。
+
+---
+
+# 51. Phase 2
+
+追加：
+
+* perfect
+* progressive
+* passive
+* relative clauses
+* comparative/superlative
+* advanced conjunctions
+* pronoun coreference
+* ambiguity UI
+* phrasal verbs
+* larger slang database
+* regional English
+
+---
+
+# 52. Phase 3
+
+追加：
+
+* pasted social media English
+* paragraph-level analysis
+* cross-sentence pronoun resolution
+* live dictionary updates
+* learning history
+* difficulty estimation
+* exercises
+* reverse mode: Code → English
+* explanation generation
+
+---
+
+# 53. 成功条件
+
+このプロダクトの成功は「全英文を形式意味論的に完全解析できること」ではない。
+
+ユーザーが、
+
+```text
+I can probably meet Ken in Tokyo tomorrow.
+```
+
+を見て、
+
+```text
+can(
+    I.meet(
+        Ken,
+        in=Tokyo,
+        adverb=[probably, tomorrow]
+    )
+)
+```
+
+を確認し、
+
+「canが全体を包む」
+「meetの主体はI」
+「対象はKen」
+「in Tokyoがmeetに付く」
+「probablyとtomorrowは副詞的にmeetへ付く」
+
+と直感的に理解できることを成功条件とする。
+
+---
+
+# 54. 開発時の禁止事項
+
+以下は避ける。
+
+1. 英単語を巨大な手書き辞書としてコードへ直接埋め込む。
+2. POSを辞書だけで確定する。
+3. 未知語が一つあるだけで文全体を解析不能にする。
+4. LLMへ英文を渡して完成EAC文字列だけを返させる。
+5. `tense=past` 等の文法メタデータをSimple Viewへ大量表示する。
+6. スラングを標準語へ置換して原文を消す。
+7. スラングの意味をconfidenceなしで断定する。
+8. 複数語スラングを単語ごとに解析して意味を壊す。
+9. slang / vulgar / regional / informalを一つのカテゴリにまとめる。
+10. ParserとRendererを密結合する。
+11. ASTを経由せず文字列を直接生成する。
+12. 入力tokenと出力nodeのsource mappingを捨てる。
+13. 曖昧な英文について一つの解析を絶対的正解として扱う。
+
+---
+
+# 55. 開発エージェントへの優先指示
+
+実装開始時に、まずUIを完成させようとしない。
+
+以下の順序で開発すること。
+
+```text
+1. EAC AST schema
+2. Source mapping
+3. Core parser interface
+4. LexicalResolver
+5. Slang/Phrase Resolver
+6. EAC Renderer
+7. Golden test corpus
+8. API
+9. UI
+10. Inspector / highlighting
+```
+
+特に、
+
+**AST + Renderer + Golden Tests**
+
+をプロジェクトの中核とする。
+
+この3つが安定する前に大量の辞書データや豪華なUIを作り込まない。
+
+---
+
+# 56. 最終思想
+
+English as Codeの基本思想：
+
+**Words stay. Structure changes.**
+
+英語を「別の言語」に翻訳するのではない。
+
+英単語そのものは可能な限り保持し、
+
+```text
+can
+probably
+meet
+Ken
+in
+Tokyo
+tomorrow
+```
+
+といったユーザーが実際に読んでいる語を使って、
+
+その背後に存在する、
+
+```text
+can(
+    I.meet(
+        Ken,
+        in=Tokyo,
+        adverb=[probably, tomorrow]
+    )
+)
+```
+
+という構造を可視化する。
+
+Standard Englishだけでなく、
+
+```text
+I'm gonna head out.
+Ngl that was fire.
+Bro I'm cooked.
+Hit me up later.
+```
+
+のような現実に使われる英語についても、
+
+**原文を尊重しながら、構造・品詞・register・意味を分離して理解できること**
+
+を最終目標とする。

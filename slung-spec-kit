@@ -1,0 +1,2093 @@
+# English as Code
+
+# Slang System Specification v1.0
+
+## 0. この文書の目的
+
+本仕様書は、English as Code（EAC）におけるスラング・口語・ネット表現・地域表現・新語の収集、検証、保存、解析、表示方法を定義する。
+
+スラング対応を単純な「俗語辞書」として実装してはならない。
+
+EACでは、
+
+* 標準語
+* 口語
+* 縮約
+* ネット略語
+* スラング
+* イディオム
+* 地域表現
+* コミュニティ固有表現
+* 新興表現
+* 未知語
+
+を統一的なLexical Systemの中で扱いつつ、それぞれの性質を区別する。
+
+最重要原則はEAC全体と同じく、
+
+> **Words stay. Structure changes.**
+
+である。
+
+スラングを「正しい標準英語」に書き換えることが目的ではない。
+
+ユーザーが実際に目にした英語を保持したまま、その構造と意味を理解できるようにする。
+
+---
+
+# 1. 基本原則
+
+## 1.1 Surface Preservation
+
+原文のスラングを可能な限りEAC出力にも残す。
+
+Input:
+
+```text
+That song is fire.
+```
+
+Output:
+
+```text
+song = fire
+```
+
+以下にはしない。
+
+```text
+song = excellent
+```
+
+`fire ≈ excellent / exciting / impressive` という情報はInspectorへ表示する。
+
+---
+
+## 1.2 Normalizationと表示を分離する
+
+内部解析ではnormalizationを許可する。
+
+例：
+
+```text
+gonna
+→ going to
+```
+
+しかし原文情報を失ってはならない。
+
+内部的には最低限、
+
+```text
+surface: gonna
+normalized: going to
+```
+
+の両方を保持する。
+
+---
+
+# 2. スラングシステムの対象
+
+最低限、以下を区別する。
+
+```text
+standard
+informal
+informal_contraction
+spoken_reduction
+internet_abbreviation
+internet_expression
+discourse_marker
+semantic_slang
+slang_word
+slang_phrase
+idiom
+phrasal_verb
+regional
+community_specific
+vulgar
+offensive
+emerging
+unknown
+```
+
+単純な、
+
+```text
+type = slang
+```
+
+だけで済ませない。
+
+---
+
+# 3. Informal Contraction
+
+例：
+
+```text
+gonna
+wanna
+gotta
+lemme
+gimme
+dunno
+kinda
+sorta
+ain't
+y'all
+```
+
+Entry例：
+
+```json
+{
+  "surface": "gonna",
+  "category": "informal_contraction",
+  "normalized": "going to",
+  "register": "very_informal"
+}
+```
+
+Input:
+
+```text
+I'm gonna go home.
+```
+
+解析時には `going to` 相当として扱える。
+
+ただしUIでは `gonna` を保持する。
+
+Inspector:
+
+```text
+gonna
+
+Category
+Informal contraction
+
+Equivalent
+going to
+
+Register
+Very informal / spoken
+```
+
+---
+
+# 4. Internet Abbreviation
+
+例：
+
+```text
+idk
+ngl
+tbh
+imo
+imho
+fr
+frfr
+rn
+irl
+btw
+afaik
+fyi
+brb
+smh
+lmao
+lol
+wtf
+omg
+nvm
+```
+
+単純な略語展開だけではなく、文中での役割を保持する。
+
+例えば、
+
+```text
+Ngl, this movie was good.
+```
+
+では `ngl` は主命題の動詞ではなくdiscourse markerとして機能する。
+
+AST例：
+
+```text
+DiscourseMarker
+├── marker: ngl
+└── content:
+      movie = good
+```
+
+Simple EAC:
+
+```text
+ngl(
+    movie = good
+)
+```
+
+---
+
+# 5. Semantic Slang
+
+標準語として存在する単語が別の俗語的意味を持つ場合。
+
+例：
+
+```text
+fire
+sick
+lit
+cold
+dead
+cooked
+salty
+based
+cringe
+clean
+mid
+```
+
+例：
+
+```text
+That song is fire.
+```
+
+と
+
+```text
+The house is on fire.
+```
+
+の `fire` は同じsenseではない。
+
+したがって、
+
+```text
+fire = slang
+```
+
+という単純な辞書構造は禁止する。
+
+複数senseを保持する。
+
+---
+
+# 6. Context-dependent Slang
+
+例：
+
+```text
+I'm cooked.
+```
+
+と、
+
+```text
+The chicken is cooked.
+```
+
+を区別する。
+
+概念的には、
+
+```json
+{
+  "surface": "cooked",
+  "senses": [
+    {
+      "type": "standard",
+      "gloss": "prepared using heat"
+    },
+    {
+      "type": "slang",
+      "gloss": "in serious trouble, exhausted, or finished"
+    }
+  ]
+}
+```
+
+とする。
+
+最終senseはContext Resolverが選択する。
+
+---
+
+# 7. Multiword Slang
+
+以下を単語単位に分解して意味を壊してはならない。
+
+```text
+hit me up
+no cap
+my bad
+let him cook
+touch grass
+spill the tea
+shoot your shot
+say less
+locked in
+```
+
+例えば、
+
+```text
+hit me up
+```
+
+を、
+
+```text
+hit + me + up
+```
+
+として通常語義で解釈してはならない。
+
+Phrase Matcherによって一つのlexical unit候補として認識する。
+
+---
+
+# 8. Compositionality
+
+Phrase Entryには、
+
+```text
+compositional
+```
+
+を持たせる。
+
+例：
+
+```json
+{
+  "surface": "spill the tea",
+  "category": "slang_phrase",
+  "compositional": false
+}
+```
+
+一方、
+
+```text
+really cool
+```
+
+のような表現は通常の構文規則で解析できるためcompositionalである。
+
+---
+
+# 9. Register System
+
+`slang=true`だけでは不十分。
+
+最低限、
+
+```text
+neutral
+formal
+informal
+very_informal
+internet_casual
+vulgar
+offensive
+```
+
+を持つ。
+
+可能であれば複数軸に分離する。
+
+推奨：
+
+```json
+{
+  "register": {
+    "formality": "very_informal",
+    "medium": ["spoken", "internet"],
+    "tone": ["playful"]
+  }
+}
+```
+
+---
+
+# 10. Region
+
+registerとregionを混同しない。
+
+```text
+US
+UK
+Canada
+Australia
+New Zealand
+Ireland
+global
+global_internet
+unknown
+```
+
+等を保持可能にする。
+
+例：
+
+```json
+{
+  "surface": "y'all",
+  "region": ["US"],
+  "register": {
+    "formality": "informal"
+  }
+}
+```
+
+---
+
+# 11. Community / Domain
+
+一部の表現は特定コミュニティで強く使われる。
+
+例：
+
+```text
+gaming
+streaming
+TikTok
+X/Twitter
+Reddit
+Twitch
+music
+sports
+finance
+programming
+anime
+fandom
+```
+
+したがって必要に応じて、
+
+```json
+{
+  "domains": [
+    "gaming",
+    "internet"
+  ]
+}
+```
+
+を保持する。
+
+ただしコミュニティ情報を過剰に推測しない。
+
+---
+
+# 12. Temporal Status
+
+スラングは時間変化が大きい。
+
+最低限、
+
+```text
+established
+current
+emerging
+dated
+obsolete
+uncertain
+```
+
+を区別する。
+
+推奨フィールド：
+
+```json
+{
+  "temporal": {
+    "status": "current",
+    "first_known": null,
+    "last_verified": "YYYY-MM-DD"
+  }
+}
+```
+
+正確な初出年が分からない場合は推測して保存しない。
+
+---
+
+# 13. Confidence
+
+各senseにconfidenceを持たせる。
+
+```text
+high
+medium
+low
+unknown
+```
+
+内部的には0〜1を使用してもよい。
+
+例：
+
+```json
+{
+  "confidence": 0.94
+}
+```
+
+UIでは、
+
+```text
+High
+Medium
+Low
+Uncertain
+```
+
+程度に変換する。
+
+---
+
+# 14. Verification Status
+
+confidenceとは別にデータの由来を管理する。
+
+最低限、
+
+```text
+verified
+provisional
+runtime_inferred
+unverified
+```
+
+を区別する。
+
+### verified
+
+複数の信頼できる資料・用例によって確認済み。
+
+### provisional
+
+意味はかなり確からしいが、正式なSeed Lexiconにはまだ完全採用していない。
+
+### runtime_inferred
+
+実行時に外部情報やLLMから推定しただけ。
+
+### unverified
+
+候補として発見したが確認不足。
+
+`runtime_inferred` を自動的に `verified` に昇格させてはならない。
+
+---
+
+# 15. 情報源
+
+Slang Systemは単一ソースをtruth sourceにしない。
+
+情報源を用途別に扱う。
+
+## Tier A — Lexical Foundation
+
+標準語義・品詞・基本的なusage label確認。
+
+候補：
+
+* English Wiktionary
+* Open English WordNet
+* その他ライセンス確認済みlexical resource
+
+用途：
+
+```text
+lemma
+POS
+standard senses
+informal/slang labels
+regional labels
+```
+
+---
+
+# 16. Tier B — Curated Dictionaries
+
+人間によって編集された辞書。
+
+用途：
+
+* slang sense確認
+* register確認
+* historical usage
+* regional usage
+* established slangの検証
+
+可能であれば複数資料を照合する。
+
+---
+
+# 17. Tier C — Community Sources
+
+例：
+
+* Urban Dictionary
+* Reddit
+* その他公開コミュニティ
+
+用途：
+
+**新しい表現の発見と実使用確認。**
+
+唯一のtruth sourceとして使用しない。
+
+Urban Dictionaryに存在するという理由だけで、
+
+```text
+verified=true
+```
+
+にしてはならない。
+
+---
+
+# 18. Usage Evidence
+
+辞書上の定義だけでなく、実際にその表現がどう使われているかを確認する。
+
+重要なのは、
+
+```text
+word → definition
+```
+
+だけではなく、
+
+```text
+word + context → sense
+```
+
+を理解すること。
+
+例えば、
+
+```text
+cooked
+```
+
+について、
+
+```text
+I'm cooked.
+We're cooked.
+The chicken is cooked.
+He cooked dinner.
+Let him cook.
+```
+
+を別々に扱える必要がある。
+
+---
+
+# 19. Source Record
+
+各senseは出典情報を持てるようにする。
+
+例：
+
+```json
+{
+  "sources": [
+    {
+      "source_type": "lexical_dictionary",
+      "provider": "wiktionary",
+      "url": "...",
+      "retrieved_at": "YYYY-MM-DD"
+    },
+    {
+      "source_type": "usage_evidence",
+      "provider": "...",
+      "retrieved_at": "YYYY-MM-DD"
+    }
+  ]
+}
+```
+
+外部文章そのものを大量保存する必要はない。
+
+---
+
+# 20. Copyright / License Policy
+
+外部辞書の定義文を無条件にコピーして内部DB化しない。
+
+保存するものは原則として、
+
+* lemma
+* category
+* POS
+* register
+* region
+* classification
+* 独自に作成した短いgloss
+* source metadata
+
+とする。
+
+外部データセットを直接取り込む場合は、必ず、
+
+```text
+source
+version
+license
+attribution requirement
+redistribution requirement
+```
+
+を記録する。
+
+ライセンス条件が不明なデータをproduction DBへ大量取り込みしない。
+
+---
+
+# 21. Source Reliability
+
+情報源ごとに信頼度を設定可能にする。
+
+概念例：
+
+```text
+curated lexical dictionary
+        ↓ HIGH
+
+established slang dictionary
+        ↓ HIGH/MEDIUM
+
+multiple usage examples
+        ↓ MEDIUM
+
+community dictionary
+        ↓ MEDIUM/LOW
+
+single social-media occurrence
+        ↓ LOW
+
+LLM inference only
+        ↓ LOW
+```
+
+これは絶対値ではなく、Evidence Aggregatorの材料とする。
+
+---
+
+# 22. Candidate Discovery
+
+未知表現を発見した場合、
+
+```text
+Unknown expression
+        ↓
+Candidate Discovery
+        ↓
+Source Search
+        ↓
+Evidence Collection
+        ↓
+Sense Candidates
+        ↓
+Context Matching
+        ↓
+Confidence
+```
+
+というパイプラインを使用する。
+
+---
+
+# 23. Unknown Expression Detection
+
+未知語だけを対象にしない。
+
+例えば、
+
+```text
+He ate.
+```
+
+では `ate` 自体は標準英単語なので辞書に存在する。
+
+しかし文脈によっては、
+
+```text
+performed extremely well
+```
+
+というスラング用法である可能性がある。
+
+したがって、
+
+```text
+dictionary hit = slang search不要
+```
+
+とはしない。
+
+Context Resolverが標準senseとの適合度を評価する。
+
+---
+
+# 24. Runtime Slang Resolution
+
+入力：
+
+```text
+Bro is absolutely zooted.
+```
+
+仮に `zooted` がローカルDBにない場合、
+
+```text
+Local Lexicon
+    ↓ miss
+
+Standard Lexicon
+    ↓ insufficient
+
+Context Analysis
+    ↓ possible slang
+
+External Resolution
+    ↓
+
+Candidate senses
+    ↓
+
+Evidence Aggregation
+    ↓
+
+Runtime Result
+```
+
+とする。
+
+---
+
+# 25. LLM Fallback
+
+LLMは最後の補助解析器として使用可能。
+
+ただし、
+
+```text
+What does this mean?
+```
+
+という自由回答だけを取得しない。
+
+structured outputを要求する。
+
+概念例：
+
+```json
+{
+  "surface": "zooted",
+  "likely_slang": true,
+  "candidate_pos": "adjective",
+  "candidate_glosses": [
+    "..."
+  ],
+  "register": "very_informal",
+  "confidence": 0.61
+}
+```
+
+LLMの回答は、
+
+```text
+verification_status=runtime_inferred
+```
+
+とする。
+
+---
+
+# 26. LLMは辞書ではない
+
+LLMの推測だけでSeed Lexiconを自動更新してはならない。
+
+禁止：
+
+```text
+LLM says X
+↓
+permanent DB insert
+```
+
+許可：
+
+```text
+LLM says X
+↓
+runtime candidate
+↓
+other evidence
+↓
+verification
+↓
+possible promotion
+```
+
+---
+
+# 27. Evidence Aggregation
+
+候補senseごとに複数証拠をまとめる。
+
+概念：
+
+```text
+Sense Candidate
+
+Dictionary evidence      +0.35
+Curated slang source     +0.25
+Multiple usage examples  +0.20
+Community evidence       +0.10
+LLM inference            +0.05
+Context compatibility    +0.30
+```
+
+具体的な重みは実装時に調整する。
+
+この数値例を固定仕様とはしない。
+
+目的は、
+
+**「一つの情報源だけで意味を断定しない」**
+
+ことである。
+
+---
+
+# 28. Sense Selection
+
+例：
+
+```text
+I'm cooked.
+```
+
+候補：
+
+```text
+A: food prepared with heat
+B: in trouble / exhausted / finished
+```
+
+Context ResolverによってBの適合度が高い場合、
+
+```text
+selected_sense = B
+confidence = high
+```
+
+とする。
+
+ただしAをLexiconから削除しない。
+
+---
+
+# 29. Ambiguous Slang
+
+候補senseが拮抗する場合は断定しない。
+
+例：
+
+```text
+I'm dead.
+```
+
+文脈によって、
+
+* literal
+* exhausted
+* laughing very hard
+* shocked
+
+等があり得る。
+
+文脈不足なら、
+
+```text
+Possible meanings:
+1. extremely amused
+2. shocked/overwhelmed
+3. exhausted
+```
+
+のようにInspectorへ複数候補を出せる設計にする。
+
+---
+
+# 30. EAC Rendering Policy
+
+Slang ResolverはEAC文字列を直接生成しない。
+
+Slang Resolverの責務：
+
+```text
+surface
+normalized form
+sense
+POS
+register
+metadata
+confidence
+```
+
+まで。
+
+構造はAST Builderが決定する。
+
+表示はRendererが決定する。
+
+---
+
+# 31. Preserve Surface Policy
+
+以下：
+
+```text
+That movie is fire.
+```
+
+ASTでは、
+
+```text
+surface: fire
+sense: slang_positive
+```
+
+を保持する。
+
+Renderer：
+
+```text
+movie = fire
+```
+
+Inspector：
+
+```text
+fire
+
+Usage
+Slang
+
+Approximate meaning
+excellent / exciting / impressive
+```
+
+とする。
+
+---
+
+# 32. Normalize Structure Policy
+
+一方、
+
+```text
+I'm gonna go.
+```
+
+では `gonna` の文法機能を理解するためnormalizationが必要。
+
+内部：
+
+```text
+surface: gonna
+normalized: going to
+```
+
+EACは意味構造を優先して、
+
+```text
+going_to(I.go())
+```
+
+等へ変換可能。
+
+ただしsource mappingにより `gonna` と対応させる。
+
+---
+
+# 33. Phrase Preservation
+
+Input:
+
+```text
+Hit me up later.
+```
+
+推奨：
+
+```text
+hit_me_up(
+    me,
+    adverb=later
+)
+```
+
+`contact(me)` に完全置換しない。
+
+理由：
+
+ユーザーが知りたいのは「hit me upという表現がどう働いているか」だからである。
+
+---
+
+# 34. Inspector Requirements
+
+Slang Inspectorには可能な範囲で以下を表示する。
+
+```text
+Expression
+Category
+Part of speech / grammatical role
+Approximate meaning
+Normalized form
+Register
+Region
+Domain
+Current/dated/emerging status
+Confidence
+Alternative meanings
+```
+
+すべてのフィールドが存在する必要はない。
+
+情報がない場合は無理に生成しない。
+
+---
+
+# 35. Visual Representation
+
+SlangであることとPOSは別属性。
+
+例えば `fire` がこの文でadjective-likeなら、
+
+```text
+POS = adjective-like
+REGISTER = slang
+```
+
+を同時に保持する。
+
+したがってUIでは、
+
+**スラング専用色でPOS色を上書きしない。**
+
+推奨：
+
+* POS → text color
+* slang/informal → underline / badge / border / dot
+
+など別visual channelを使用する。
+
+---
+
+# 36. Offensive / Vulgar Expressions
+
+解析上必要なため、vulgar/offensive expressionもLexiconで認識可能にする。
+
+ただしmetadataとして、
+
+```text
+vulgar
+offensive
+derogatory
+potentially_sensitive
+```
+
+等を保持できるようにする。
+
+単純に「禁止単語なので解析不能」としてはならない。
+
+教育目的として、
+
+* 意味
+* 強さ
+* 使用場面
+* register
+
+を理解できる構造を用意する。
+
+---
+
+# 37. Seed Lexicon
+
+初期リリースではWeb全体をリアルタイム辞書化しない。
+
+まず人間が確認した高品質なSeed Lexiconを用意する。
+
+目標：
+
+```text
+v0.1  200–500 expressions
+v1    1,000+
+```
+
+程度。
+
+量より精度を優先する。
+
+---
+
+# 38. Seed Lexicon Categories
+
+最低限以下を含める。
+
+### Informal
+
+```text
+gonna
+wanna
+gotta
+lemme
+gimme
+dunno
+kinda
+sorta
+ain't
+y'all
+```
+
+### Internet
+
+```text
+ngl
+tbh
+idk
+imo
+imho
+fr
+frfr
+rn
+irl
+btw
+afaik
+fyi
+smh
+nvm
+```
+
+### Semantic Slang
+
+```text
+fire
+lit
+sick
+cooked
+salty
+based
+cringe
+cap
+GOAT
+mid
+rizz
+clean
+dead
+ate
+ratioed
+```
+
+### Phrase
+
+```text
+no cap
+hit me up
+let him cook
+touch grass
+spill the tea
+shoot your shot
+say less
+locked in
+my bad
+```
+
+---
+
+# 39. Slang Entry Schema
+
+推奨スキーマ：
+
+```json
+{
+  "id": "slang.fire.positive.01",
+
+  "surface": "fire",
+  "lemma": "fire",
+
+  "category": "semantic_slang",
+
+  "possible_pos": [
+    "adjective_like"
+  ],
+
+  "gloss": "very good, exciting, or impressive",
+
+  "normalized": null,
+
+  "compositional": true,
+
+  "register": {
+    "formality": "very_informal",
+    "medium": [
+      "spoken",
+      "internet"
+    ],
+    "tone": []
+  },
+
+  "regions": [
+    "global_internet"
+  ],
+
+  "domains": [],
+
+  "temporal": {
+    "status": "current",
+    "first_known": null,
+    "last_verified": null
+  },
+
+  "verification": {
+    "status": "verified",
+    "confidence": 0.95
+  },
+
+  "eac": {
+    "preserve_surface": true,
+    "normalization_required": false
+  },
+
+  "sources": []
+}
+```
+
+---
+
+# 40. Phrase Schema
+
+例：
+
+```json
+{
+  "id": "slang.hit_me_up.01",
+
+  "surface": "hit me up",
+
+  "category": "slang_phrase",
+
+  "gloss": "contact me",
+
+  "compositional": false,
+
+  "register": {
+    "formality": "informal",
+    "medium": [
+      "spoken",
+      "internet"
+    ]
+  },
+
+  "eac": {
+    "preserve_surface": true,
+    "render_as_unit": true
+  }
+}
+```
+
+---
+
+# 41. Context Patterns
+
+必要に応じてsense判定用patternを持たせる。
+
+例：
+
+```json
+{
+  "surface": "cooked",
+
+  "sense": "slang_finished",
+
+  "patterns": [
+    "PERSON + be + cooked",
+    "PRONOUN + be + cooked"
+  ]
+}
+```
+
+ただしregexだけで意味判定しない。
+
+patternはContext Resolverのfeatureの一つとする。
+
+---
+
+# 42. Phrase Matching
+
+Multiword expression検出は通常のtoken-level parsingより前または連携して行う。
+
+入力：
+
+```text
+You should hit me up later.
+```
+
+候補：
+
+```text
+hit
+hit me
+hit me up
+```
+
+Longest Matchだけに依存せず、Lexiconとcontextを用いて、
+
+```text
+hit me up
+```
+
+をunitとして認識する。
+
+---
+
+# 43. Versioning
+
+Slang Lexiconは独立してversion管理する。
+
+例：
+
+```text
+slang-lexicon-v1.0
+slang-lexicon-v1.1
+```
+
+Entry更新時には可能であれば、
+
+```text
+created_at
+updated_at
+last_verified
+```
+
+を保持する。
+
+---
+
+# 44. Deprecation
+
+古くなったスラングを削除しない。
+
+例えば用法がdatedになった場合、
+
+```text
+status=current
+```
+
+から、
+
+```text
+status=dated
+```
+
+へ変更する。
+
+過去の文章解析にも必要だからである。
+
+---
+
+# 45. Feedback Loop
+
+将来的にユーザーから、
+
+```text
+This meaning is wrong.
+This is slang.
+This expression is outdated.
+```
+
+等のfeedbackを受け取れる設計にしてよい。
+
+ただしユーザー報告を直接Lexiconへ反映しない。
+
+```text
+Feedback
+↓
+Candidate correction
+↓
+Verification
+↓
+Lexicon update
+```
+
+とする。
+
+---
+
+# 46. Runtime Cache
+
+未知スラングの外部解析結果はcache可能。
+
+ただし、
+
+```text
+cache
+```
+
+と、
+
+```text
+verified lexicon
+```
+
+を区別する。
+
+Runtime cacheの情報を永続的な正式辞書と同一視しない。
+
+---
+
+# 47. Failure Policy
+
+意味が分からない場合に、もっともらしい意味を作らない。
+
+例：
+
+```text
+That movie was zorp.
+```
+
+なら、
+
+```text
+movie = zorp
+```
+
+まで解析できる。
+
+Inspector：
+
+```text
+zorp
+
+Probable grammatical role
+Predicate adjective/complement
+
+Meaning
+Unknown
+
+Possible slang
+Yes
+
+Confidence
+Low
+```
+
+でよい。
+
+これは失敗ではない。
+
+**分からないことを正しく分からないと表現することもシステムの正常動作である。**
+
+---
+
+# 48. Evaluation Dataset
+
+Golden Corpusとは別に、Slang専用評価セットを作成する。
+
+最低限：
+
+```text
+standard vs slang sense
+informal contractions
+internet abbreviations
+discourse markers
+multiword slang
+regional forms
+vulgar register
+emerging slang
+unknown expressions
+ambiguous slang
+dated slang
+```
+
+を含める。
+
+---
+
+# 49. Contrastive Tests
+
+特に重要。
+
+ペアでテストする。
+
+例：
+
+```text
+The chicken is cooked.
+I'm cooked.
+```
+
+```text
+The house is on fire.
+That song is fire.
+```
+
+```text
+He cooked dinner.
+Let him cook.
+```
+
+```text
+She ate dinner.
+She ate.
+```
+
+同じsurface wordでもcontextによってsenseが変わることを検証する。
+
+---
+
+# 50. Slang Evaluation Metrics
+
+単純なdictionary hit rateだけを評価しない。
+
+最低限、
+
+```text
+Expression Detection Accuracy
+Sense Selection Accuracy
+Register Accuracy
+Phrase Boundary Accuracy
+Unknown Detection Accuracy
+False Slang Detection Rate
+EAC Surface Preservation Rate
+```
+
+を測定できるようにする。
+
+特に、
+
+**標準語を誤ってslang判定するFalse Positive**
+
+を重視する。
+
+---
+
+# 51. 更新パイプライン
+
+将来的には定期的に、
+
+```text
+Candidate Discovery
+        ↓
+Deduplication
+        ↓
+Evidence Collection
+        ↓
+Sense Clustering
+        ↓
+Verification
+        ↓
+Human/Rule Review
+        ↓
+Seed Lexicon Update
+        ↓
+Regression Tests
+        ↓
+Release
+```
+
+という更新フローを構築する。
+
+---
+
+# 52. ディレクトリ構造
+
+推奨：
+
+```text
+references/
+└── slang/
+    ├── SOURCES.md
+    ├── SLANG_SYSTEM_SPEC.md
+    ├── SLANG_SCHEMA.json
+    ├── REGISTER_TAXONOMY.md
+    ├── slang_seed.jsonl
+    ├── slang_test_cases.jsonl
+    └── licenses/
+        └── THIRD_PARTY_DATA.md
+```
+
+アプリ本体：
+
+```text
+src/
+└── lexicon/
+    ├── core/
+    ├── phrases/
+    ├── slang/
+    │   ├── resolver
+    │   ├── matcher
+    │   ├── context
+    │   ├── evidence
+    │   └── cache
+    └── regional/
+```
+
+---
+
+# 53. SOURCES.mdに記録するもの
+
+各外部資料について最低限、
+
+```text
+Name
+URL
+Purpose
+Data type
+Reliability tier
+License
+Can data be redistributed?
+Can definitions be copied?
+Attribution requirements
+Last reviewed
+Implementation notes
+```
+
+を記録する。
+
+---
+
+# 54. 実装優先順位
+
+Slang Systemだけについては以下の順序を推奨する。
+
+```text
+1. Slang Entry Schema
+2. Register Taxonomy
+3. Seed Lexicon
+4. Multiword Phrase Matcher
+5. Informal Normalizer
+6. Context-dependent Sense Resolver
+7. EAC AST integration
+8. Inspector integration
+9. Golden/Contrastive Tests
+10. External source resolver
+11. Evidence aggregation
+12. LLM fallback
+13. Automatic candidate discovery
+```
+
+最初からリアルタイムWeb検索システムを作らない。
+
+まず高品質なSeed LexiconとContext Resolverを安定させる。
+
+---
+
+# 55. MVPでの必須対応
+
+MVPでは最低限、
+
+```text
+gonna
+wanna
+gotta
+lemme
+gimme
+dunno
+
+ngl
+tbh
+idk
+imo
+fr
+rn
+
+fire
+lit
+sick
+cooked
+salty
+cringe
+cap
+no cap
+GOAT
+mid
+rizz
+
+hit me up
+my bad
+let him cook
+touch grass
+spill the tea
+locked in
+lowkey
+highkey
+```
+
+などの代表表現を扱う。
+
+重要なのは単語数ではなく、
+
+```text
+detection
+→ classification
+→ contextual sense
+→ AST
+→ EAC
+→ Inspector
+```
+
+まで一貫して動作することである。
+
+---
+
+# 56. Productionでの理想動作
+
+Input:
+
+```text
+Ngl bro, we're cooked.
+```
+
+解析：
+
+```text
+ngl
+→ internet abbreviation
+→ discourse marker
+→ "not gonna lie"
+
+bro
+→ informal address/discourse element
+
+cooked
+→ standard sense exists
+→ context incompatible with food sense
+→ slang candidate
+→ slang sense selected
+→ confidence high
+```
+
+EAC：
+
+```text
+ngl(
+    we = cooked
+)
+```
+
+Inspectorで `cooked`：
+
+```text
+cooked
+
+Role
+Predicate complement
+
+Usage
+Slang
+
+Approximate meaning
+in serious trouble / finished / exhausted
+
+Register
+Very informal
+
+Meaning selected from context
+Yes
+
+Confidence
+High
+```
+
+原文：
+
+```text
+Ngl bro, we're cooked.
+```
+
+は保持する。
+
+---
+
+# 57. Productionでの未知表現
+
+Input:
+
+```text
+Bro, that game was florp.
+```
+
+`florp` がどこにも登録されていない場合：
+
+```text
+bro(
+    game = florp
+)
+```
+
+またはdiscourse markerをSimple Viewで省略する方針なら、
+
+```text
+game = florp
+```
+
+まで解析する。
+
+Inspector：
+
+```text
+florp
+
+Lexical status
+Unknown
+
+Probable role
+Predicate complement / adjective-like
+
+Possible slang
+Yes
+
+Meaning
+Unknown
+
+Confidence
+Low
+```
+
+LLMや外部検索が候補意味を提示しても、十分な証拠がなければ、
+
+```text
+Possible interpretation
+```
+
+としてのみ表示する。
+
+---
+
+# 58. 絶対に避ける実装
+
+以下は禁止する。
+
+1. Urban Dictionaryを唯一のslang databaseにする。
+2. LLMを唯一のslang dictionaryにする。
+3. `word → meaning`だけの単純辞書にする。
+4. 一つの単語に一つのsenseしか持てない構造にする。
+5. `slang=true/false`だけで全情報を表す。
+6. regionとregisterを同一視する。
+7. 新語を発見しただけでverified DBへ登録する。
+8. LLM推測を自動的に永久保存する。
+9. slangを標準語へ置換して原文を失う。
+10. phraseを単語単位へ強制分割する。
+11. confidenceなしで新興スラングの意味を断定する。
+12. 外部辞書の定義文をライセンス確認なしに大量コピーする。
+13. 辞書にない単語をすべてslang扱いする。
+14. 辞書にある単語ならslangではないと判断する。
+15. 意味が不明なのにもっともらしい説明を生成する。
+
+---
+
+# 59. 最重要設計思想
+
+English as Codeにとって、スラングは「例外処理」ではない。
+
+現実の英語には、
+
+```text
+I'm going to leave.
+I'm gonna leave.
+I'm out.
+I'm cooked.
+Ngl, I'm cooked.
+Bro we're cooked fr.
+```
+
+のような連続性がある。
+
+したがって、
+
+```text
+Standard English
+-----------------
+Slang
+```
+
+という完全な二分法ではなく、
+
+```text
+lexical form
+grammatical role
+sense
+register
+region
+domain
+time
+context
+confidence
+```
+
+という複数軸から表現を理解する。
+
+---
+
+# 60. 最終原則
+
+スラング解析でシステムが答えるべき問いは、
+
+> 「この単語はスラングですか？」
+
+だけではない。
+
+本当に答えるべきなのは、
+
+> **この表現は、この文脈では、どのような構造を持ち、どの意味で使われ、どの程度くだけた表現で、どの程度その解釈に自信を持てるか？**
+
+である。
+
+そのうえでEACは原文を尊重する。
+
+```text
+That song is fire.
+```
+
+なら、
+
+```text
+song = fire
+```
+
+を見せる。
+
+意味を知りたければInspectorで、
+
+```text
+fire
+→ slang
+→ approximately: excellent / exciting / impressive
+```
+
+を確認できる。
+
+つまり、
+
+**解析のためには正規化する。
+理解のためには意味を補足する。
+表示では原文を尊重する。**
+
+これをEnglish as Code Slang Systemの基本原則とする。

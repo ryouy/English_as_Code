@@ -1,0 +1,554 @@
+﻿id,category,subcategory,input,expected_eac,focus,register,confidence,status,notes,tags
+EAC-GC-0001,basic,copula,That is Ken.,that = Ken,copula → =,standard,high,golden,,
+EAC-GC-0002,basic,copula,Ken is happy.,Ken = happy,copula → =,standard,high,golden,,
+EAC-GC-0003,basic,copula,She is a student.,she = student,copula → =,standard,high,golden,,
+EAC-GC-0004,basic,transitive,I like dogs.,I.like(dogs),subject.verb(object),standard,high,golden,,
+EAC-GC-0005,basic,intransitive,Birds fly.,birds.fly(),subject.verb(),standard,high,golden,,
+EAC-GC-0006,modifier,adjective,I bought a red car.,I.bought(car(adjective=red)),adjective attachment,standard,high,golden,,
+EAC-GC-0007,modifier,multiple_adjective,I bought a beautiful red car.,"I.bought(car(adjective=[beautiful, red]))",multiple adjectives,standard,high,golden,,
+EAC-GC-0008,modifier,adverb,I run quickly.,I.run(adverb=quickly),adverb=value,standard,high,golden,,
+EAC-GC-0009,modifier,nested_adverb,I ran very quickly.,I.ran(adverb=very(quickly)),adverb modifies adverb,standard,high,golden,,
+EAC-GC-0010,preposition,destination,I went to Tokyo.,I.went(to=Tokyo),preposition=value,standard,high,golden,,
+EAC-GC-0011,preposition,multiple,I went to Tokyo with Ken yesterday.,"I.went(to=Tokyo, with=Ken, adverb=yesterday)",multiple modifiers,standard,high,golden,,
+EAC-GC-0012,modal,can,I can swim.,can(I.swim()),modal wrapper,standard,high,golden,,
+EAC-GC-0013,modal,must,I must go.,must(I.go()),modal wrapper,standard,high,golden,,
+EAC-GC-0014,modal,may,I may go.,may(I.go()),modal wrapper,standard,high,golden,,
+EAC-GC-0015,modal,will,I will go.,will(I.go()),modal wrapper,standard,high,golden,,
+EAC-GC-0016,negation,do_not,I don't like coffee.,!I.like(coffee),negation,standard,high,golden,,
+EAC-GC-0017,negation,modal,I can't swim.,!can(I.swim()),modal negation,standard,high,golden,,
+EAC-GC-0018,question,yes_no,Do you like coffee?,you.like(coffee)?,question,standard,high,golden,,
+EAC-GC-0019,question,wh_object,What do you like?,you.like(?),unknown object,standard,high,golden,,
+EAC-GC-0020,question,where,Where does Ken live?,Ken.live(where=?),unknown location,standard,high,golden,,
+EAC-GC-0021,question,when,When did she arrive?,she.arrive(when=?),unknown time,standard,high,golden,,
+EAC-GC-0022,question,who_subject,Who broke this?,?.broke(this),unknown subject,standard,high,golden,,
+EAC-GC-0023,possession,possessive,I like my car.,I.like(my.car),possession,standard,high,golden,,
+EAC-GC-0024,possession,nested,I like my father's car.,I.like(my.father.car),nested possession,standard,high,golden,,
+EAC-GC-0025,complement,infinitive,I want to play tennis.,I.want(I.play(tennis)),nested action,standard,high,golden,,
+EAC-GC-0026,complement,gerund,I enjoy playing tennis.,I.enjoy(I.play(tennis)),nested action,standard,high,golden,,
+EAC-GC-0027,clause,if,"If it rains, I will stay home.",if (it.rains()) { will(I.stay(home)) },condition,standard,high,golden,,
+EAC-GC-0028,clause,because,I stayed home because it rained.,I.stayed(home) because(it.rained()),cause,standard,high,golden,,
+EAC-GC-0029,clause,and,I ate pizza and drank beer.,I.ate(pizza) and I.drank(beer),coordination,standard,high,golden,,
+EAC-GC-0030,clause,but,"I was tired, but I studied.",I = tired but I.studied(),contrast,standard,high,golden,,
+EAC-GC-0031,informal,gonna,I'm gonna go home.,going_to(I.go(home)),informal normalization,informal,high,golden,Preserve 'gonna' in source/Inspector.,
+EAC-GC-0032,informal,wanna,I wanna see it.,I.want(I.see(it)),informal normalization,informal,high,golden,,
+EAC-GC-0033,informal,lemme,Lemme know.,let(me.know()),informal normalization,informal,high,golden,,
+EAC-GC-0034,internet,ngl,"Ngl, this is good.",ngl(this = good),discourse marker,internet_casual,high,golden,,
+EAC-GC-0035,internet,idk,Idk what he wants.,!I.know(he.wants(?)),internet abbreviation,internet_casual,high,golden,,
+EAC-GC-0036,slang,semantic,That song is fire.,song = fire,surface-preserving slang,slang,high,golden,fire ≈ excellent/exciting; do not replace surface output.,
+EAC-GC-0037,slang,semantic,I'm cooked.,I = cooked,context-dependent slang,slang,medium,golden,May mean in trouble/exhausted/finished.,
+EAC-GC-0038,slang,phrase,Hit me up later.,"hit_me_up(me, adverb=later)",multiword slang,slang,high,golden,,
+EAC-GC-0039,slang,phrase,Spill the tea.,spill_the_tea(),non-compositional slang phrase,slang,high,golden,,
+EAC-GC-0040,unknown,unknown_verb,I totally glorped it.,"I.glorped(it, adverb=totally)","infer syntax, not meaning",standard,low,golden,,
+EAC-GC-0041,ambiguity,pp_attachment,I saw the man with a telescope.,AMBIGUOUS,multiple valid parses,standard,medium,review,Return multiple analyses.,
+EAC-GC-0042,ambiguity,lexical,She saw her duck.,AMBIGUOUS,noun/verb ambiguity,standard,medium,review,Return multiple analyses.,
+EAC-GC-0043,basic,systematic_transitive,I like coffee.,I.like(coffee),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0044,basic,systematic_transitive,I love music.,I.love(music),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0045,basic,systematic_transitive,I watch TV.,I.watch(TV),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0046,basic,systematic_transitive,I play tennis.,I.play(tennis),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0047,basic,systematic_transitive,I study English.,I.study(English),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0048,basic,systematic_transitive,I eat pizza.,I.eat(pizza),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0049,basic,systematic_transitive,I read books.,I.read(books),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0050,basic,systematic_transitive,I need help.,I.need(help),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0051,basic,systematic_transitive,I want water.,I.want(water),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0052,basic,systematic_transitive,I visit Tokyo.,I.visit(Tokyo),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0053,basic,systematic_transitive,I open the door.,I.open(door),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0054,basic,systematic_transitive,I clean the room.,I.clean(room),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0055,basic,systematic_transitive,I buy a ticket.,I.buy(ticket),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0056,basic,systematic_transitive,I call Ken.,I.call(Ken),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0057,basic,systematic_transitive,I use a computer.,I.use(computer),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0058,basic,systematic_transitive,You like coffee.,you.like(coffee),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0059,basic,systematic_transitive,You love music.,you.love(music),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0060,basic,systematic_transitive,You watch TV.,you.watch(TV),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0061,basic,systematic_transitive,You play tennis.,you.play(tennis),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0062,basic,systematic_transitive,You study English.,you.study(English),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0063,basic,systematic_transitive,You eat pizza.,you.eat(pizza),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0064,basic,systematic_transitive,You read books.,you.read(books),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0065,basic,systematic_transitive,You need help.,you.need(help),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0066,basic,systematic_transitive,You want water.,you.want(water),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0067,basic,systematic_transitive,You visit Tokyo.,you.visit(Tokyo),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0068,basic,systematic_transitive,You open the door.,you.open(door),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0069,basic,systematic_transitive,You clean the room.,you.clean(room),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0070,basic,systematic_transitive,You buy a ticket.,you.buy(ticket),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0071,basic,systematic_transitive,You call Ken.,you.call(Ken),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0072,basic,systematic_transitive,You use a computer.,you.use(computer),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0073,basic,systematic_transitive,He like coffee.,he.like(coffee),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0074,basic,systematic_transitive,He love music.,he.love(music),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0075,basic,systematic_transitive,He watch TV.,he.watch(TV),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0076,basic,systematic_transitive,He play tennis.,he.play(tennis),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0077,basic,systematic_transitive,He study English.,he.study(English),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0078,basic,systematic_transitive,He eat pizza.,he.eat(pizza),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0079,basic,systematic_transitive,He read books.,he.read(books),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0080,basic,systematic_transitive,He need help.,he.need(help),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0081,basic,systematic_transitive,He want water.,he.want(water),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0082,basic,systematic_transitive,He visit Tokyo.,he.visit(Tokyo),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0083,basic,systematic_transitive,He open the door.,he.open(door),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0084,basic,systematic_transitive,He clean the room.,he.clean(room),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0085,basic,systematic_transitive,He buy a ticket.,he.buy(ticket),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0086,basic,systematic_transitive,He call Ken.,he.call(Ken),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0087,basic,systematic_transitive,He use a computer.,he.use(computer),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0088,basic,systematic_transitive,She like coffee.,she.like(coffee),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0089,basic,systematic_transitive,She love music.,she.love(music),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0090,basic,systematic_transitive,She watch TV.,she.watch(TV),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0091,basic,systematic_transitive,She play tennis.,she.play(tennis),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0092,basic,systematic_transitive,She study English.,she.study(English),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0093,basic,systematic_transitive,She eat pizza.,she.eat(pizza),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0094,basic,systematic_transitive,She read books.,she.read(books),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0095,basic,systematic_transitive,She need help.,she.need(help),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0096,basic,systematic_transitive,She want water.,she.want(water),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0097,basic,systematic_transitive,She visit Tokyo.,she.visit(Tokyo),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0098,basic,systematic_transitive,She open the door.,she.open(door),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0099,basic,systematic_transitive,She clean the room.,she.clean(room),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0100,basic,systematic_transitive,She buy a ticket.,she.buy(ticket),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0101,basic,systematic_transitive,She call Ken.,she.call(Ken),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0102,basic,systematic_transitive,She use a computer.,she.use(computer),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0103,basic,systematic_transitive,We like coffee.,we.like(coffee),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0104,basic,systematic_transitive,We love music.,we.love(music),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0105,basic,systematic_transitive,We watch TV.,we.watch(TV),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0106,basic,systematic_transitive,We play tennis.,we.play(tennis),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0107,basic,systematic_transitive,We study English.,we.study(English),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0108,basic,systematic_transitive,We eat pizza.,we.eat(pizza),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0109,basic,systematic_transitive,We read books.,we.read(books),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0110,basic,systematic_transitive,We need help.,we.need(help),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0111,basic,systematic_transitive,We want water.,we.want(water),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0112,basic,systematic_transitive,We visit Tokyo.,we.visit(Tokyo),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0113,basic,systematic_transitive,We open the door.,we.open(door),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0114,basic,systematic_transitive,We clean the room.,we.clean(room),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0115,basic,systematic_transitive,We buy a ticket.,we.buy(ticket),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0116,basic,systematic_transitive,We call Ken.,we.call(Ken),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0117,basic,systematic_transitive,We use a computer.,we.use(computer),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0118,basic,systematic_transitive,They like coffee.,they.like(coffee),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0119,basic,systematic_transitive,They love music.,they.love(music),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0120,basic,systematic_transitive,They watch TV.,they.watch(TV),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0121,basic,systematic_transitive,They play tennis.,they.play(tennis),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0122,basic,systematic_transitive,They study English.,they.study(English),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0123,basic,systematic_transitive,They eat pizza.,they.eat(pizza),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0124,basic,systematic_transitive,They read books.,they.read(books),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0125,basic,systematic_transitive,They need help.,they.need(help),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0126,basic,systematic_transitive,They want water.,they.want(water),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0127,basic,systematic_transitive,They visit Tokyo.,they.visit(Tokyo),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0128,basic,systematic_transitive,They open the door.,they.open(door),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0129,basic,systematic_transitive,They clean the room.,they.clean(room),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0130,basic,systematic_transitive,They buy a ticket.,they.buy(ticket),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0131,basic,systematic_transitive,They call Ken.,they.call(Ken),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0132,basic,systematic_transitive,They use a computer.,they.use(computer),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0133,basic,systematic_transitive,Ken like coffee.,Ken.like(coffee),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0134,basic,systematic_transitive,Ken love music.,Ken.love(music),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0135,basic,systematic_transitive,Ken watch TV.,Ken.watch(TV),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0136,basic,systematic_transitive,Ken play tennis.,Ken.play(tennis),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0137,basic,systematic_transitive,Ken study English.,Ken.study(English),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0138,basic,systematic_transitive,Ken eat pizza.,Ken.eat(pizza),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0139,basic,systematic_transitive,Ken read books.,Ken.read(books),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0140,basic,systematic_transitive,Ken need help.,Ken.need(help),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0141,basic,systematic_transitive,Ken want water.,Ken.want(water),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0142,basic,systematic_transitive,Ken visit Tokyo.,Ken.visit(Tokyo),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0143,basic,systematic_transitive,Ken open the door.,Ken.open(door),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0144,basic,systematic_transitive,Ken clean the room.,Ken.clean(room),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0145,basic,systematic_transitive,Ken buy a ticket.,Ken.buy(ticket),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0146,basic,systematic_transitive,Ken call Ken.,Ken.call(Ken),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0147,basic,systematic_transitive,Ken use a computer.,Ken.use(computer),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0148,basic,systematic_transitive,Maria like coffee.,Maria.like(coffee),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0149,basic,systematic_transitive,Maria love music.,Maria.love(music),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0150,basic,systematic_transitive,Maria watch TV.,Maria.watch(TV),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0151,basic,systematic_transitive,Maria play tennis.,Maria.play(tennis),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0152,basic,systematic_transitive,Maria study English.,Maria.study(English),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0153,basic,systematic_transitive,Maria eat pizza.,Maria.eat(pizza),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0154,basic,systematic_transitive,Maria read books.,Maria.read(books),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0155,basic,systematic_transitive,Maria need help.,Maria.need(help),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0156,basic,systematic_transitive,Maria want water.,Maria.want(water),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0157,basic,systematic_transitive,Maria visit Tokyo.,Maria.visit(Tokyo),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0158,basic,systematic_transitive,Maria open the door.,Maria.open(door),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0159,basic,systematic_transitive,Maria clean the room.,Maria.clean(room),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0160,basic,systematic_transitive,Maria buy a ticket.,Maria.buy(ticket),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0161,basic,systematic_transitive,Maria call Ken.,Maria.call(Ken),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0162,basic,systematic_transitive,Maria use a computer.,Maria.use(computer),systematic subject/verb/object,standard,high,golden,,generated|core
+EAC-GC-0163,basic,systematic_intransitive,I run.,I.run(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0164,basic,systematic_intransitive,I swim.,I.swim(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0165,basic,systematic_intransitive,I sleep.,I.sleep(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0166,basic,systematic_intransitive,I laugh.,I.laugh(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0167,basic,systematic_intransitive,I wait.,I.wait(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0168,basic,systematic_intransitive,I dance.,I.dance(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0169,basic,systematic_intransitive,I work.,I.work(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0170,basic,systematic_intransitive,I study.,I.study(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0171,basic,systematic_intransitive,I arrive.,I.arrive(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0172,basic,systematic_intransitive,I leave.,I.leave(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0173,basic,systematic_intransitive,You run.,you.run(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0174,basic,systematic_intransitive,You swim.,you.swim(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0175,basic,systematic_intransitive,You sleep.,you.sleep(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0176,basic,systematic_intransitive,You laugh.,you.laugh(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0177,basic,systematic_intransitive,You wait.,you.wait(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0178,basic,systematic_intransitive,You dance.,you.dance(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0179,basic,systematic_intransitive,You work.,you.work(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0180,basic,systematic_intransitive,You study.,you.study(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0181,basic,systematic_intransitive,You arrive.,you.arrive(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0182,basic,systematic_intransitive,You leave.,you.leave(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0183,basic,systematic_intransitive,He run.,he.run(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0184,basic,systematic_intransitive,He swim.,he.swim(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0185,basic,systematic_intransitive,He sleep.,he.sleep(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0186,basic,systematic_intransitive,He laugh.,he.laugh(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0187,basic,systematic_intransitive,He wait.,he.wait(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0188,basic,systematic_intransitive,He dance.,he.dance(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0189,basic,systematic_intransitive,He work.,he.work(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0190,basic,systematic_intransitive,He study.,he.study(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0191,basic,systematic_intransitive,He arrive.,he.arrive(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0192,basic,systematic_intransitive,He leave.,he.leave(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0193,basic,systematic_intransitive,She run.,she.run(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0194,basic,systematic_intransitive,She swim.,she.swim(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0195,basic,systematic_intransitive,She sleep.,she.sleep(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0196,basic,systematic_intransitive,She laugh.,she.laugh(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0197,basic,systematic_intransitive,She wait.,she.wait(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0198,basic,systematic_intransitive,She dance.,she.dance(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0199,basic,systematic_intransitive,She work.,she.work(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0200,basic,systematic_intransitive,She study.,she.study(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0201,basic,systematic_intransitive,She arrive.,she.arrive(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0202,basic,systematic_intransitive,She leave.,she.leave(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0203,basic,systematic_intransitive,We run.,we.run(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0204,basic,systematic_intransitive,We swim.,we.swim(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0205,basic,systematic_intransitive,We sleep.,we.sleep(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0206,basic,systematic_intransitive,We laugh.,we.laugh(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0207,basic,systematic_intransitive,We wait.,we.wait(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0208,basic,systematic_intransitive,We dance.,we.dance(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0209,basic,systematic_intransitive,We work.,we.work(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0210,basic,systematic_intransitive,We study.,we.study(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0211,basic,systematic_intransitive,We arrive.,we.arrive(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0212,basic,systematic_intransitive,We leave.,we.leave(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0213,basic,systematic_intransitive,They run.,they.run(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0214,basic,systematic_intransitive,They swim.,they.swim(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0215,basic,systematic_intransitive,They sleep.,they.sleep(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0216,basic,systematic_intransitive,They laugh.,they.laugh(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0217,basic,systematic_intransitive,They wait.,they.wait(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0218,basic,systematic_intransitive,They dance.,they.dance(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0219,basic,systematic_intransitive,They work.,they.work(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0220,basic,systematic_intransitive,They study.,they.study(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0221,basic,systematic_intransitive,They arrive.,they.arrive(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0222,basic,systematic_intransitive,They leave.,they.leave(),systematic intransitive,standard,high,golden,,generated|core
+EAC-GC-0223,modifier,systematic_adverb,I run slowly.,I.run(adverb=slowly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0224,modifier,systematic_adverb,I run carefully.,I.run(adverb=carefully),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0225,modifier,systematic_adverb,I run often.,I.run(adverb=often),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0226,modifier,systematic_adverb,I run always.,I.run(adverb=always),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0227,modifier,systematic_adverb,I run sometimes.,I.run(adverb=sometimes),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0228,modifier,systematic_adverb,I run today.,I.run(adverb=today),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0229,modifier,systematic_adverb,I run yesterday.,I.run(adverb=yesterday),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0230,modifier,systematic_adverb,I run outside.,I.run(adverb=outside),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0231,modifier,systematic_adverb,I run alone.,I.run(adverb=alone),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0232,modifier,systematic_adverb,You run quickly.,you.run(adverb=quickly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0233,modifier,systematic_adverb,You run slowly.,you.run(adverb=slowly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0234,modifier,systematic_adverb,You run carefully.,you.run(adverb=carefully),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0235,modifier,systematic_adverb,You run often.,you.run(adverb=often),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0236,modifier,systematic_adverb,You run always.,you.run(adverb=always),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0237,modifier,systematic_adverb,You run sometimes.,you.run(adverb=sometimes),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0238,modifier,systematic_adverb,You run today.,you.run(adverb=today),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0239,modifier,systematic_adverb,You run yesterday.,you.run(adverb=yesterday),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0240,modifier,systematic_adverb,You run outside.,you.run(adverb=outside),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0241,modifier,systematic_adverb,You run alone.,you.run(adverb=alone),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0242,modifier,systematic_adverb,He run quickly.,he.run(adverb=quickly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0243,modifier,systematic_adverb,He run slowly.,he.run(adverb=slowly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0244,modifier,systematic_adverb,He run carefully.,he.run(adverb=carefully),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0245,modifier,systematic_adverb,He run often.,he.run(adverb=often),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0246,modifier,systematic_adverb,He run always.,he.run(adverb=always),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0247,modifier,systematic_adverb,He run sometimes.,he.run(adverb=sometimes),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0248,modifier,systematic_adverb,He run today.,he.run(adverb=today),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0249,modifier,systematic_adverb,He run yesterday.,he.run(adverb=yesterday),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0250,modifier,systematic_adverb,He run outside.,he.run(adverb=outside),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0251,modifier,systematic_adverb,He run alone.,he.run(adverb=alone),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0252,modifier,systematic_adverb,She run quickly.,she.run(adverb=quickly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0253,modifier,systematic_adverb,She run slowly.,she.run(adverb=slowly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0254,modifier,systematic_adverb,She run carefully.,she.run(adverb=carefully),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0255,modifier,systematic_adverb,She run often.,she.run(adverb=often),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0256,modifier,systematic_adverb,She run always.,she.run(adverb=always),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0257,modifier,systematic_adverb,She run sometimes.,she.run(adverb=sometimes),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0258,modifier,systematic_adverb,She run today.,she.run(adverb=today),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0259,modifier,systematic_adverb,She run yesterday.,she.run(adverb=yesterday),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0260,modifier,systematic_adverb,She run outside.,she.run(adverb=outside),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0261,modifier,systematic_adverb,She run alone.,she.run(adverb=alone),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0262,modifier,systematic_adverb,We run quickly.,we.run(adverb=quickly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0263,modifier,systematic_adverb,We run slowly.,we.run(adverb=slowly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0264,modifier,systematic_adverb,We run carefully.,we.run(adverb=carefully),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0265,modifier,systematic_adverb,We run often.,we.run(adverb=often),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0266,modifier,systematic_adverb,We run always.,we.run(adverb=always),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0267,modifier,systematic_adverb,We run sometimes.,we.run(adverb=sometimes),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0268,modifier,systematic_adverb,We run today.,we.run(adverb=today),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0269,modifier,systematic_adverb,We run yesterday.,we.run(adverb=yesterday),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0270,modifier,systematic_adverb,We run outside.,we.run(adverb=outside),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0271,modifier,systematic_adverb,We run alone.,we.run(adverb=alone),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0272,modifier,systematic_adverb,They run quickly.,they.run(adverb=quickly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0273,modifier,systematic_adverb,They run slowly.,they.run(adverb=slowly),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0274,modifier,systematic_adverb,They run carefully.,they.run(adverb=carefully),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0275,modifier,systematic_adverb,They run often.,they.run(adverb=often),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0276,modifier,systematic_adverb,They run always.,they.run(adverb=always),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0277,modifier,systematic_adverb,They run sometimes.,they.run(adverb=sometimes),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0278,modifier,systematic_adverb,They run today.,they.run(adverb=today),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0279,modifier,systematic_adverb,They run yesterday.,they.run(adverb=yesterday),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0280,modifier,systematic_adverb,They run outside.,they.run(adverb=outside),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0281,modifier,systematic_adverb,They run alone.,they.run(adverb=alone),adverb attachment,standard,high,golden,,generated|modifier
+EAC-GC-0282,preposition,to,I go to Tokyo.,I.go(to=Tokyo),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0283,preposition,to,I travel to Japan.,I.travel(to=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0284,preposition,from,I come from Osaka.,I.come(from=Osaka),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0285,preposition,in,I live in Japan.,I.live(in=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0286,preposition,with,I study with Ken.,I.study(with=Ken),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0287,preposition,at,I wait at the station.,I.wait(at=station),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0288,preposition,on,I sit on the chair.,I.sit(on=chair),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0289,preposition,for,I work for Acme.,I.work(for=Acme),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0290,preposition,through,I walk through the park.,I.walk(through=park),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0291,preposition,about,I talk about music.,I.talk(about=music),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0292,preposition,to,You go to Tokyo.,you.go(to=Tokyo),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0293,preposition,to,You travel to Japan.,you.travel(to=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0294,preposition,from,You come from Osaka.,you.come(from=Osaka),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0295,preposition,in,You live in Japan.,you.live(in=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0296,preposition,with,You study with Ken.,you.study(with=Ken),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0297,preposition,at,You wait at the station.,you.wait(at=station),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0298,preposition,on,You sit on the chair.,you.sit(on=chair),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0299,preposition,for,You work for Acme.,you.work(for=Acme),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0300,preposition,through,You walk through the park.,you.walk(through=park),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0301,preposition,about,You talk about music.,you.talk(about=music),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0302,preposition,to,He go to Tokyo.,he.go(to=Tokyo),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0303,preposition,to,He travel to Japan.,he.travel(to=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0304,preposition,from,He come from Osaka.,he.come(from=Osaka),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0305,preposition,in,He live in Japan.,he.live(in=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0306,preposition,with,He study with Ken.,he.study(with=Ken),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0307,preposition,at,He wait at the station.,he.wait(at=station),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0308,preposition,on,He sit on the chair.,he.sit(on=chair),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0309,preposition,for,He work for Acme.,he.work(for=Acme),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0310,preposition,through,He walk through the park.,he.walk(through=park),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0311,preposition,about,He talk about music.,he.talk(about=music),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0312,preposition,to,She go to Tokyo.,she.go(to=Tokyo),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0313,preposition,to,She travel to Japan.,she.travel(to=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0314,preposition,from,She come from Osaka.,she.come(from=Osaka),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0315,preposition,in,She live in Japan.,she.live(in=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0316,preposition,with,She study with Ken.,she.study(with=Ken),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0317,preposition,at,She wait at the station.,she.wait(at=station),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0318,preposition,on,She sit on the chair.,she.sit(on=chair),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0319,preposition,for,She work for Acme.,she.work(for=Acme),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0320,preposition,through,She walk through the park.,she.walk(through=park),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0321,preposition,about,She talk about music.,she.talk(about=music),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0322,preposition,to,We go to Tokyo.,we.go(to=Tokyo),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0323,preposition,to,We travel to Japan.,we.travel(to=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0324,preposition,from,We come from Osaka.,we.come(from=Osaka),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0325,preposition,in,We live in Japan.,we.live(in=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0326,preposition,with,We study with Ken.,we.study(with=Ken),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0327,preposition,at,We wait at the station.,we.wait(at=station),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0328,preposition,on,We sit on the chair.,we.sit(on=chair),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0329,preposition,for,We work for Acme.,we.work(for=Acme),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0330,preposition,through,We walk through the park.,we.walk(through=park),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0331,preposition,about,We talk about music.,we.talk(about=music),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0332,preposition,to,They go to Tokyo.,they.go(to=Tokyo),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0333,preposition,to,They travel to Japan.,they.travel(to=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0334,preposition,from,They come from Osaka.,they.come(from=Osaka),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0335,preposition,in,They live in Japan.,they.live(in=Japan),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0336,preposition,with,They study with Ken.,they.study(with=Ken),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0337,preposition,at,They wait at the station.,they.wait(at=station),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0338,preposition,on,They sit on the chair.,they.sit(on=chair),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0339,preposition,for,They work for Acme.,they.work(for=Acme),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0340,preposition,through,They walk through the park.,they.walk(through=park),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0341,preposition,about,They talk about music.,they.talk(about=music),preposition as named argument,standard,high,golden,,generated|preposition
+EAC-GC-0342,modal,must,I must swim.,must(I.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0343,modal,may,I may swim.,may(I.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0344,modal,should,I should swim.,should(I.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0345,modal,will,I will swim.,will(I.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0346,modal,might,I might swim.,might(I.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0347,modal,could,I could swim.,could(I.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0348,modal,can,You can swim.,can(you.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0349,modal,must,You must swim.,must(you.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0350,modal,may,You may swim.,may(you.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0351,modal,should,You should swim.,should(you.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0352,modal,will,You will swim.,will(you.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0353,modal,might,You might swim.,might(you.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0354,modal,could,You could swim.,could(you.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0355,modal,can,He can swim.,can(he.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0356,modal,must,He must swim.,must(he.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0357,modal,may,He may swim.,may(he.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0358,modal,should,He should swim.,should(he.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0359,modal,will,He will swim.,will(he.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0360,modal,might,He might swim.,might(he.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0361,modal,could,He could swim.,could(he.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0362,modal,can,She can swim.,can(she.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0363,modal,must,She must swim.,must(she.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0364,modal,may,She may swim.,may(she.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0365,modal,should,She should swim.,should(she.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0366,modal,will,She will swim.,will(she.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0367,modal,might,She might swim.,might(she.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0368,modal,could,She could swim.,could(she.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0369,modal,can,We can swim.,can(we.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0370,modal,must,We must swim.,must(we.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0371,modal,may,We may swim.,may(we.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0372,modal,should,We should swim.,should(we.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0373,modal,will,We will swim.,will(we.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0374,modal,might,We might swim.,might(we.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0375,modal,could,We could swim.,could(we.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0376,modal,can,They can swim.,can(they.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0377,modal,must,They must swim.,must(they.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0378,modal,may,They may swim.,may(they.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0379,modal,should,They should swim.,should(they.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0380,modal,will,They will swim.,will(they.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0381,modal,might,They might swim.,might(they.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0382,modal,could,They could swim.,could(they.swim()),modal wrapper,standard,high,golden,,generated|modal
+EAC-GC-0383,question,what,What do you want?,you.want(?),wh object,standard,high,golden,,generated|question
+EAC-GC-0384,question,where,Where does you live?,you.live(where=?),wh location,standard,high,golden,,generated|question
+EAC-GC-0385,question,yes_no,Do he like coffee?,he.like(coffee)?,yes/no question,standard,high,golden,,generated|question
+EAC-GC-0386,question,what,What do he want?,he.want(?),wh object,standard,high,golden,,generated|question
+EAC-GC-0387,question,where,Where does he live?,he.live(where=?),wh location,standard,high,golden,,generated|question
+EAC-GC-0388,question,yes_no,Do she like coffee?,she.like(coffee)?,yes/no question,standard,high,golden,,generated|question
+EAC-GC-0389,question,what,What do she want?,she.want(?),wh object,standard,high,golden,,generated|question
+EAC-GC-0390,question,where,Where does she live?,she.live(where=?),wh location,standard,high,golden,,generated|question
+EAC-GC-0391,question,yes_no,Do Ken like coffee?,Ken.like(coffee)?,yes/no question,standard,high,golden,,generated|question
+EAC-GC-0392,question,what,What do Ken want?,Ken.want(?),wh object,standard,high,golden,,generated|question
+EAC-GC-0393,negation,do_not,You don't like coffee.,!you.like(coffee),negation,standard,high,golden,,generated|negation
+EAC-GC-0394,negation,cannot,You can't swim.,!can(you.swim()),modal negation,standard,high,golden,,generated|negation
+EAC-GC-0395,negation,do_not,He don't like coffee.,!he.like(coffee),negation,standard,high,golden,,generated|negation
+EAC-GC-0396,negation,cannot,He can't swim.,!can(he.swim()),modal negation,standard,high,golden,,generated|negation
+EAC-GC-0397,negation,do_not,She don't like coffee.,!she.like(coffee),negation,standard,high,golden,,generated|negation
+EAC-GC-0398,negation,cannot,She can't swim.,!can(she.swim()),modal negation,standard,high,golden,,generated|negation
+EAC-GC-0399,negation,do_not,We don't like coffee.,!we.like(coffee),negation,standard,high,golden,,generated|negation
+EAC-GC-0400,negation,cannot,We can't swim.,!can(we.swim()),modal negation,standard,high,golden,,generated|negation
+EAC-GC-0401,negation,do_not,They don't like coffee.,!they.like(coffee),negation,standard,high,golden,,generated|negation
+EAC-GC-0402,negation,cannot,They can't swim.,!can(they.swim()),modal negation,standard,high,golden,,generated|negation
+EAC-GC-0403,modifier,adjective,I see a red car.,I.see(car(adjective=red)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0404,modifier,adjective,I see a small dog.,I.see(dog(adjective=small)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0405,modifier,adjective,I see a beautiful old house.,"I.see(house(adjective=[beautiful, old]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0406,modifier,adjective,I see a new black phone.,"I.see(phone(adjective=[new, black]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0407,modifier,adjective,I see a hot coffee.,I.see(coffee(adjective=hot)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0408,modifier,adjective,You see a red car.,you.see(car(adjective=red)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0409,modifier,adjective,You see a small dog.,you.see(dog(adjective=small)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0410,modifier,adjective,You see a beautiful old house.,"you.see(house(adjective=[beautiful, old]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0411,modifier,adjective,You see a new black phone.,"you.see(phone(adjective=[new, black]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0412,modifier,adjective,You see a hot coffee.,you.see(coffee(adjective=hot)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0413,modifier,adjective,He see a red car.,he.see(car(adjective=red)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0414,modifier,adjective,He see a small dog.,he.see(dog(adjective=small)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0415,modifier,adjective,He see a beautiful old house.,"he.see(house(adjective=[beautiful, old]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0416,modifier,adjective,He see a new black phone.,"he.see(phone(adjective=[new, black]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0417,modifier,adjective,He see a hot coffee.,he.see(coffee(adjective=hot)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0418,modifier,adjective,She see a red car.,she.see(car(adjective=red)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0419,modifier,adjective,She see a small dog.,she.see(dog(adjective=small)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0420,modifier,adjective,She see a beautiful old house.,"she.see(house(adjective=[beautiful, old]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0421,modifier,adjective,She see a new black phone.,"she.see(phone(adjective=[new, black]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0422,modifier,adjective,She see a hot coffee.,she.see(coffee(adjective=hot)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0423,modifier,adjective,We see a red car.,we.see(car(adjective=red)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0424,modifier,adjective,We see a small dog.,we.see(dog(adjective=small)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0425,modifier,adjective,We see a beautiful old house.,"we.see(house(adjective=[beautiful, old]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0426,modifier,adjective,We see a new black phone.,"we.see(phone(adjective=[new, black]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0427,modifier,adjective,We see a hot coffee.,we.see(coffee(adjective=hot)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0428,modifier,adjective,They see a red car.,they.see(car(adjective=red)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0429,modifier,adjective,They see a small dog.,they.see(dog(adjective=small)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0430,modifier,adjective,They see a beautiful old house.,"they.see(house(adjective=[beautiful, old]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0431,modifier,adjective,They see a new black phone.,"they.see(phone(adjective=[new, black]))",adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0432,modifier,adjective,They see a hot coffee.,they.see(coffee(adjective=hot)),adjective attachment,standard,high,golden,,generated|adjective
+EAC-GC-0433,possession,simple,I like your phone.,I.like(your.phone),possession,standard,high,golden,,generated|possession
+EAC-GC-0434,possession,simple,I like his book.,I.like(his.book),possession,standard,high,golden,,generated|possession
+EAC-GC-0435,possession,simple,I like her bag.,I.like(her.bag),possession,standard,high,golden,,generated|possession
+EAC-GC-0436,possession,simple,I like our house.,I.like(our.house),possession,standard,high,golden,,generated|possession
+EAC-GC-0437,possession,simple,I like their dog.,I.like(their.dog),possession,standard,high,golden,,generated|possession
+EAC-GC-0438,possession,simple,I like Ken's car.,I.like(Ken.car),possession,standard,high,golden,,generated|possession
+EAC-GC-0439,possession,simple,I like Maria's phone.,I.like(Maria.phone),possession,standard,high,golden,,generated|possession
+EAC-GC-0440,complement,infinitive,I want to study English.,I.want(I.study(English)),nested action,standard,high,golden,,curated|nested
+EAC-GC-0441,complement,infinitive,She wants to visit Japan.,she.wants(she.visit(Japan)),nested action,standard,high,golden,,curated|nested
+EAC-GC-0442,complement,infinitive,We decided to go home.,we.decided(we.go(home)),nested action,standard,high,golden,,curated|nested
+EAC-GC-0443,complement,infinitive,They hope to win.,they.hope(they.win()),nested action,standard,high,golden,,curated|nested
+EAC-GC-0444,complement,gerund,I enjoy reading books.,I.enjoy(I.read(books)),nested action,standard,high,golden,,curated|nested
+EAC-GC-0445,complement,gerund,She likes cooking dinner.,she.likes(she.cook(dinner)),nested action,standard,high,golden,,curated|nested
+EAC-GC-0446,complement,gerund,He stopped smoking.,he.stopped(he.smoke()),nested action,standard,high,golden,,curated|nested
+EAC-GC-0447,complement,gerund,We finished cleaning the room.,we.finished(we.clean(room)),nested action,standard,high,golden,,curated|nested
+EAC-GC-0448,clause,if,"If I have time, I will call you.",if (I.have(time)) { will(I.call(you)) },clause relation,standard,high,golden,,curated|clause
+EAC-GC-0449,clause,if,"If she is tired, she will sleep.",if (she = tired) { will(she.sleep()) },clause relation,standard,high,golden,,curated|clause
+EAC-GC-0450,clause,because,I stayed inside because it was cold.,I.stayed(inside) because(it = cold),clause relation,standard,high,golden,,curated|clause
+EAC-GC-0451,clause,because,She smiled because she was happy.,she.smiled() because(she = happy),clause relation,standard,high,golden,,curated|clause
+EAC-GC-0452,clause,but,"I like coffee, but I don't like tea.",I.like(coffee) but !I.like(tea),clause relation,standard,high,golden,,curated|clause
+EAC-GC-0453,clause,and,Ken studied and Maria cooked.,Ken.studied() and Maria.cooked(),clause relation,standard,high,golden,,curated|clause
+EAC-GC-0454,clause,when,"When I arrive, I will call you.",when(I.arrive()) { will(I.call(you)) },clause relation,standard,high,golden,,curated|clause
+EAC-GC-0455,clause,before,"Before I sleep, I read a book.",before(I.sleep()) { I.read(book) },clause relation,standard,high,golden,,curated|clause
+EAC-GC-0456,clause,after,"After she ate dinner, she went home.",after(she.ate(dinner)) { she.went(home) },clause relation,standard,high,golden,,curated|clause
+EAC-GC-0457,informal,gonna,I'm gonna study tonight.,going_to(I.study(adverb=tonight)),informal/spoken form,informal,high,golden,going to,curated|informal
+EAC-GC-0458,informal,gonna,We're gonna leave now.,going_to(we.leave(adverb=now)),informal/spoken form,informal,high,golden,going to,curated|informal
+EAC-GC-0459,informal,wanna,I wanna go home.,I.want(I.go(home)),informal/spoken form,informal,high,golden,want to,curated|informal
+EAC-GC-0460,informal,wanna,Do you wanna come?,you.want(you.come())?,informal/spoken form,informal,high,golden,want to,curated|informal
+EAC-GC-0461,informal,gotta,I gotta study.,have_to(I.study()),informal/spoken form,informal,high,golden,got to/have to,curated|informal
+EAC-GC-0462,informal,gotta,You gotta see this.,have_to(you.see(this)),informal/spoken form,informal,high,golden,got to/have to,curated|informal
+EAC-GC-0463,informal,lemme,Lemme see.,let(me.see()),informal/spoken form,informal,high,golden,let me,curated|informal
+EAC-GC-0464,informal,gimme,Gimme a minute.,"give(me, minute)",informal/spoken form,informal,high,golden,give me,curated|informal
+EAC-GC-0465,informal,dunno,I dunno the answer.,!I.know(answer),informal/spoken form,informal,high,golden,don't know,curated|informal
+EAC-GC-0466,informal,yall,Y'all are ready.,y'all = ready,informal/spoken form,informal,high,golden,you all,curated|informal
+EAC-GC-0467,informal,aint,Ain't nobody here.,!(nobody = here),informal/spoken form,informal,high,golden,nonstandard negative construction,curated|informal
+EAC-GC-0468,informal,kinda,Kinda weird.,kinda(weird),informal/spoken form,informal,high,golden,kind of,curated|informal
+EAC-GC-0469,informal,sorta,Sorta funny.,sorta(funny),informal/spoken form,informal,high,golden,sort of,curated|informal
+EAC-GC-0470,internet,ngl,"Ngl, I like it.",ngl(I.like(it)),internet/discourse expression,internet_casual,high,golden,not gonna lie,curated|internet
+EAC-GC-0471,internet,tbh,"Tbh, I don't care.",tbh(!I.care()),internet/discourse expression,internet_casual,high,golden,to be honest,curated|internet
+EAC-GC-0472,internet,idk,Idk where he is.,!I.know(he = where=?),internet/discourse expression,internet_casual,high,golden,I don't know,curated|internet
+EAC-GC-0473,internet,imo,"IMO, this is better.",imo(this = better),internet/discourse expression,internet_casual,high,golden,in my opinion,curated|internet
+EAC-GC-0474,internet,imho,"IMHO, this works.",imho(this.works()),internet/discourse expression,internet_casual,high,golden,in my humble opinion,curated|internet
+EAC-GC-0475,internet,fr,"Fr, that was wild.",fr(that = wild),internet/discourse expression,internet_casual,high,golden,for real,curated|internet
+EAC-GC-0476,internet,frfr,"Frfr, this is good.",frfr(this = good),internet/discourse expression,internet_casual,high,golden,for real for real,curated|internet
+EAC-GC-0477,internet,btw,"BTW, Ken called.",btw(Ken.called()),internet/discourse expression,internet_casual,high,golden,by the way,curated|internet
+EAC-GC-0478,internet,rn,"RN, I'm busy.",rn(I = busy),internet/discourse expression,internet_casual,high,golden,right now,curated|internet
+EAC-GC-0479,internet,afaik,"AFAIK, Ken is home.",afaik(Ken = home),internet/discourse expression,internet_casual,high,golden,as far as I know,curated|internet
+EAC-GC-0480,internet,fyi,"FYI, the meeting is tomorrow.",fyi(meeting = tomorrow),internet/discourse expression,internet_casual,high,golden,for your information,curated|internet
+EAC-GC-0481,internet,nvm,"Nvm, I found it.",nvm(I.found(it)),internet/discourse expression,internet_casual,high,golden,never mind,curated|internet
+EAC-GC-0482,slang,semantic,That movie was sick.,movie = sick,surface-preserving slang,slang,medium,golden,sick: excellent/impressive in slang context,curated|slang
+EAC-GC-0483,slang,semantic,The party was lit.,party = lit,surface-preserving slang,slang,medium,golden,lit: exciting/great,curated|slang
+EAC-GC-0484,slang,semantic,We're cooked.,we = cooked,surface-preserving slang,slang,medium,golden,cooked: in trouble/finished,curated|slang
+EAC-GC-0485,slang,semantic,He's salty.,he = salty,surface-preserving slang,slang,medium,golden,salty: resentful/annoyed,curated|slang
+EAC-GC-0486,slang,semantic,That's cringe.,that = cringe,surface-preserving slang,slang,medium,golden,cringe: embarrassing/awkward,curated|slang
+EAC-GC-0487,slang,semantic,That's cap.,that = cap,surface-preserving slang,slang,medium,golden,cap: lie/falsehood,curated|slang
+EAC-GC-0488,slang,semantic,"No cap, this is amazing.",no_cap(this = amazing),surface-preserving slang,slang,medium,golden,no_cap: seriously/not lying,curated|slang
+EAC-GC-0489,slang,semantic,She's the GOAT.,she = GOAT,surface-preserving slang,slang,medium,golden,goat: greatest of all time,curated|slang
+EAC-GC-0490,slang,semantic,That take is based.,take = based,surface-preserving slang,slang,medium,golden,based: context-sensitive approval/independence,curated|slang
+EAC-GC-0491,slang,semantic,This fit is clean.,fit = clean,surface-preserving slang,slang,medium,golden,clean: stylish/good-looking in context,curated|slang
+EAC-GC-0492,slang,semantic,He got ratioed.,he.got_ratioed(),surface-preserving slang,slang,medium,golden,ratioed: social-media engagement slang,curated|slang
+EAC-GC-0493,slang,semantic,That joke sent me.,joke.sent(me),surface-preserving slang,slang,medium,golden,sent_me: made me laugh/react strongly,curated|slang
+EAC-GC-0494,slang,semantic,Bro is locked in.,bro = locked_in,surface-preserving slang,slang,medium,golden,locked_in: highly focused/committed,curated|slang
+EAC-GC-0495,slang,semantic,I'm dead.,I = dead,surface-preserving slang,slang,medium,golden,dead: figurative strong amusement/shock; context dependent,curated|slang
+EAC-GC-0496,slang,semantic,She ate.,she.ate(),surface-preserving slang,slang,medium,golden,ate: slang sense may mean performed extremely well,curated|slang
+EAC-GC-0497,slang,semantic,He has rizz.,he.has(rizz),surface-preserving slang,slang,medium,golden,"rizz: charisma, especially romantic",curated|slang
+EAC-GC-0498,slang,semantic,That's mid.,that = mid,surface-preserving slang,slang,medium,golden,mid: mediocre,curated|slang
+EAC-GC-0499,slang,semantic,Big W.,W(adjective=big),surface-preserving slang,slang,medium,golden,W: win/success; noun-like internet slang,curated|slang
+EAC-GC-0500,slang,phrase,Let's hang out.,let(us.hang_out()),multiword/contextual slang,slang,medium,golden,spend time socially,curated|slang|phrase
+EAC-GC-0501,slang,phrase,My bad.,my_bad(),multiword/contextual slang,slang,medium,golden,apology/acknowledgement,curated|slang|phrase
+EAC-GC-0502,slang,phrase,I'm down.,I = down,multiword/contextual slang,slang,medium,golden,"willing/interested, context dependent",curated|slang|phrase
+EAC-GC-0503,slang,phrase,Let him cook.,let(him.cook()),multiword/contextual slang,slang,medium,golden,literal/slang ambiguity; slang: let him continue,curated|slang|phrase
+EAC-GC-0504,slang,phrase,Touch grass.,touch_grass(),multiword/contextual slang,slang,medium,golden,internet idiom,curated|slang|phrase
+EAC-GC-0505,slang,phrase,Shoot your shot.,shoot_your_shot(),multiword/contextual slang,slang,medium,golden,"take a chance, often romantic",curated|slang|phrase
+EAC-GC-0506,slang,phrase,It's giving summer.,it = giving(summer),multiword/contextual slang,slang,medium,golden,evokes/resembles a vibe,curated|slang|phrase
+EAC-GC-0507,slang,phrase,Say less.,say_less(),multiword/contextual slang,slang,medium,golden,understood / no need to explain further,curated|slang|phrase
+EAC-GC-0508,slang,phrase,Bet.,bet(),multiword/contextual slang,slang,medium,golden,agreement/confirmation in slang use,curated|slang|phrase
+EAC-GC-0509,slang,phrase,"Lowkey, I like it.",lowkey(I.like(it)),multiword/contextual slang,slang,medium,golden,quietly/somewhat/without emphasis,curated|slang|phrase
+EAC-GC-0510,slang,phrase,"Highkey, I love it.",highkey(I.love(it)),multiword/contextual slang,slang,medium,golden,openly/strongly,curated|slang|phrase
+EAC-GC-0511,slang,phrase,He ghosted me.,he.ghosted(me),multiword/contextual slang,slang,medium,golden,stopped responding/communicating,curated|slang|phrase
+EAC-GC-0512,slang,phrase,She flexed her new car.,she.flexed(her.new.car),multiword/contextual slang,slang,medium,golden,showed off,curated|slang|phrase
+EAC-GC-0513,regional,regional_form,Y'all coming?,y'all.coming()?,regional English,informal,medium,golden,US informal,curated|regional
+EAC-GC-0514,regional,regional_form,"Cheers, mate.",cheers(mate),regional English,informal,medium,golden,UK/AU informal context-dependent,curated|regional
+EAC-GC-0515,regional,regional_form,I reckon it'll rain.,I.reckon(will(it.rain())),regional English,informal,medium,golden,UK/AU usage also standard in some regions,curated|regional
+EAC-GC-0516,regional,regional_form,That's bloody brilliant.,that = brilliant(adverb=bloody),regional English,informal,medium,golden,UK intensifier,curated|regional
+EAC-GC-0517,unknown,emerging_or_unknown,That movie was zorp.,movie = zorp,preserve syntax without invented semantics,internet_casual,low,review,unknown complement,curated|unknown
+EAC-GC-0518,unknown,emerging_or_unknown,She florped the file.,she.florped(file),preserve syntax without invented semantics,internet_casual,low,review,unknown probable transitive verb,curated|unknown
+EAC-GC-0519,unknown,emerging_or_unknown,This app is blorpy.,app = blorpy,preserve syntax without invented semantics,internet_casual,low,review,unknown predicate adjective-like item,curated|unknown
+EAC-GC-0520,unknown,emerging_or_unknown,"Bro, that's skibidi.",bro(that = skibidi),preserve syntax without invented semantics,internet_casual,low,review,emerging/context-sensitive; do not invent fixed meaning,curated|unknown
+EAC-GC-0521,unknown,emerging_or_unknown,That edit is aura.,edit = aura,preserve syntax without invented semantics,internet_casual,low,review,emerging slang; context resolution required,curated|unknown
+EAC-GC-0522,ambiguity,review_probe,Visiting relatives can be annoying.,STRUCTURAL: visiting(relatives) OR relatives(adjective=visiting),must expose multiple plausible parses,standard,medium,review,gerund/participle ambiguity,curated|ambiguity
+EAC-GC-0523,ambiguity,review_probe,Old men and women sat down.,COORDINATION_AMBIGUOUS,must expose multiple plausible parses,standard,medium,review,old modifies men only vs men and women,curated|ambiguity
+EAC-GC-0524,ambiguity,review_probe,I know the man with the dog.,PP_ATTACHMENT_AMBIGUOUS,must expose multiple plausible parses,standard,medium,review,with dog attaches to man vs know event,curated|ambiguity
+EAC-GC-0525,ambiguity,review_probe,Flying planes can be dangerous.,STRUCTURAL_AMBIGUOUS,must expose multiple plausible parses,standard,medium,review,flying as gerund vs participle,curated|ambiguity
+EAC-GC-0526,advanced,passive,The window was broken by Ken.,Ken.broke(window),advanced grammar probe,standard,medium,review,Preserve passive voice metadata internally.,curated|advanced
+EAC-GC-0527,advanced,passive,The cake was eaten by the children.,children.ate(cake),advanced grammar probe,standard,medium,review,Preserve passive voice metadata internally.,curated|advanced
+EAC-GC-0528,advanced,relative_clause,The man who lives in Tokyo is my brother.,man(who.lives(in=Tokyo)) = my.brother,advanced grammar probe,standard,medium,review,,curated|advanced
+EAC-GC-0529,advanced,relative_clause,The book that I bought was expensive.,book(that=I.bought(?)) = expensive,advanced grammar probe,standard,medium,review,Relative gap mapping needs AST.,curated|advanced
+EAC-GC-0530,advanced,comparative,Ken is taller than Tom.,Ken = taller(than=Tom),advanced grammar probe,standard,medium,review,,curated|advanced
+EAC-GC-0531,advanced,superlative,This is the best restaurant.,this = restaurant(adjective=best),advanced grammar probe,standard,medium,review,,curated|advanced
+EAC-GC-0532,advanced,perfect,I have finished my homework.,have(I.finished(my.homework)),advanced grammar probe,standard,medium,review,Experimental display; internal metadata required.,curated|advanced
+EAC-GC-0533,advanced,progressive,I am studying English.,I.studying(English),advanced grammar probe,standard,medium,review,Experimental display.,curated|advanced
+EAC-GC-0534,advanced,perfect_progressive,I have been studying English.,have(been(I.studying(English))),advanced grammar probe,standard,medium,review,Experimental display.,curated|advanced
+EAC-GC-0535,advanced,conditional,"If I had known, I would have helped.",if (I.had_known()) { would(have(I.helped())) },advanced grammar probe,standard,medium,review,Experimental advanced scope.,curated|advanced
+EAC-GC-0536,question,be_yes_no,Are you happy?,you = happy?,be-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0537,question,be_yes_no,Is she tired?,she = tired?,be-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0538,question,be_yes_no,Was Ken busy?,Ken = busy?,be-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0539,question,be_yes_no,Were they ready?,they = ready?,be-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0540,question,be_yes_no,Is Ken happy?,Ken = happy?,be-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0541,question,be_yes_no,Are they students?,they = students?,be-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0542,question,modal_yes_no,Can you swim?,can(you.swim())?,modal-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0543,question,modal_yes_no,Will she come?,will(she.come())?,modal-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0544,question,modal_yes_no,Could he study?,could(he.study())?,modal-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0545,question,modal_yes_no,Should we wait?,should(we.wait())?,modal-fronted yes/no question,standard,high,golden,,curated|question
+EAC-GC-0546,basic,object_coordination,I like you and her mother.,"I.like(you, her.mother)",'and' between two objects of one verb,standard,high,golden,,curated|basic
+EAC-GC-0547,basic,object_coordination,I love coffee and tea.,"I.love(coffee, tea)",'and' between two objects of one verb,standard,high,golden,,curated|basic
+EAC-GC-0548,basic,object_coordination,She likes music and tennis.,"she.likes(music, tennis)",'and' between two objects of one verb,standard,high,golden,,curated|basic
+EAC-GC-0549,basic,object_coordination,I like dogs and cats.,"I.like(dogs, cats)",'and' between two objects of one verb,standard,high,golden,,curated|basic
+EAC-GC-0550,question,yes_no_coordination,Do you like coffee and tea?,"you.like(coffee, tea)?",object coordination inside a do-support question,standard,high,golden,,curated|question
+EAC-GC-0551,complement,infinitive_extraposition,It is nice to meet you.,it = nice(meet(you)),extraposed infinitival complement of a copula adjective,standard,high,golden,,curated|complement
+EAC-GC-0552,complement,infinitive_extraposition,It is good to see you.,it = good(see(you)),extraposed infinitival complement of a copula adjective,standard,high,golden,,curated|complement
+EAC-GC-0553,clause,and_vp_shared_subject,He watches TV and plays tennis.,he.watches(TV) and he.plays(tennis),"VP coordination with shared subject, -s inflected verbs",standard,high,golden,,curated|clause

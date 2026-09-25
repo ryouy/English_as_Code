@@ -1,0 +1,39 @@
+{
+  "valid": true,
+  "case_count": 553,
+  "unique_inputs": 553,
+  "categories": {
+    "advanced": 10,
+    "ambiguity": 6,
+    "basic": 189,
+    "clause": 14,
+    "complement": 12,
+    "informal": 16,
+    "internet": 14,
+    "modal": 45,
+    "modifier": 93,
+    "negation": 12,
+    "possession": 9,
+    "preposition": 62,
+    "question": 26,
+    "regional": 4,
+    "slang": 35,
+    "unknown": 6
+  },
+  "registers": {
+    "informal": 20,
+    "internet_casual": 19,
+    "slang": 35,
+    "standard": 479
+  },
+  "statuses": {
+    "golden": 532,
+    "review": 21
+  },
+  "checks": [
+    "IDs unique",
+    "Inputs unique (case-insensitive)",
+    "Required fields present",
+    "Corpus >= 500 cases"
+  ]
+}
