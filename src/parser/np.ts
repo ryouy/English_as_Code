@@ -57,7 +57,8 @@ export function parseObjectNP(tokens: SourceToken[]): Entity {
     pos++; // determiner dropped, not added to output (only if a noun follows it)
   }
 
-  const content = tokens.slice(pos);
+  // commas between adjectives ("a big, red car") are just separators, not content
+  const content = tokens.slice(pos).filter((t) => t.surface !== ",");
   if (content.length === 0) {
     // possessive chain with nothing left to possess (shouldn't happen in MVP grammar)
     return { type: "Entity", surface: tokens.map((t) => t.surface).join(" "), render: chainParts.join("."), kind: "common_noun", start, end };

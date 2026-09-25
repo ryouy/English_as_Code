@@ -1,6 +1,12 @@
 import type { SourceToken, PrepArg, AdverbPhrase, Entity } from "../ast/types.js";
 import { PREPOSITIONS, KNOWN_ADVERBS, ADVERB_MODIFIERS } from "../lexicon/closedClass.js";
+
+// Unambiguous object pronouns only — "her"/"its"/"your" etc. are excluded since
+// they double as possessive determiners ("her bag") and would wrongly split
+// off from the noun they possess.
+const UNAMBIGUOUS_OBJECT_PRONOUNS = new Set(["me", "him", "us", "them"]);
 import { parseObjectNP } from "./np.js";
+import { RELATIVE_PRONOUNS, parseNPWithOptionalRelativeClause } from "./clause.js";
 
 function lower(t: SourceToken): string {
   return t.surface.toLowerCase();
@@ -13,7 +19,7 @@ export function isAdverbToken(t: SourceToken): boolean {
 
 function isBoundary(t: SourceToken): boolean {
   const lw = lower(t);
-  return PREPOSITIONS.has(lw) || isAdverbToken(t) || ADVERB_MODIFIERS.has(lw) || lw === "and";
+  return PREPOSITIONS.has(lw) || isAdverbToken(t) || ADVERB_MODIFIERS.has(lw) || lw === "and" || lw === "or";
 }
 
 export interface RemainderResult {
@@ -39,7 +45,7 @@ export function parseRemainder(tokens: SourceToken[]): RemainderResult {
     const t = tokens[pos];
     const lw = lower(t);
 
-    if (lw === "and") {
+    if (lw === "and" || lw === "or") {
       pos++;
       continue;
     }
@@ -81,10 +87,25 @@ export function parseRemainder(tokens: SourceToken[]): RemainderResult {
       continue;
     }
 
-    // start of a bare object NP
+    // ditransitive: "give me a book" -> a bare object pronoun immediately
+    // followed by MORE content is a separate indirect object, not one NP
+    // ("book(adjective=[me, a])"). Split it off and let the next loop
+    // iteration parse the direct object on its own.
+    if (UNAMBIGUOUS_OBJECT_PRONOUNS.has(lw) && pos + 1 < tokens.length && !isBoundary(tokens[pos + 1])) {
+      objects.push({ type: "Entity", surface: t.surface, render: lw, kind: "pronoun", start: t.start, end: t.end });
+      pos++;
+      continue;
+    }
+
+    // start of a bare object NP. If it contains a relative clause ("the man who
+    // lives in Tokyo"), that clause's own prepositions/adverbs aren't top-level
+    // boundaries, so it swallows the rest of the remainder rather than stopping
+    // at the first one.
     let npEnd = pos;
     while (npEnd < tokens.length && !isBoundary(tokens[npEnd])) npEnd++;
-    const entity = parseObjectNP(tokens.slice(pos, npEnd));
+    const hasRelativeClause = tokens.slice(pos, npEnd).some((t, i) => i > 0 && RELATIVE_PRONOUNS.has(lower(t)));
+    if (hasRelativeClause) npEnd = tokens.length;
+    const entity = parseNPWithOptionalRelativeClause(tokens.slice(pos, npEnd));
     objects.push(entity);
     pos = npEnd;
   }

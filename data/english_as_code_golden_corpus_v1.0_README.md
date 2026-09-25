@@ -8,28 +8,55 @@ Regression and specification corpus for the English as Code parser/AST/renderer.
 
 ## Corpus size
 
-- Total cases: **555**
-- Golden regression cases: **544**
+- Total cases: **590**
+- Golden regression cases: **579**
 - Review/specification probes: **11**
 
 ## Category distribution
 
-- advanced: 10
+- advanced: 12
 - ambiguity: 6
-- basic: 189
+- basic: 198
 - clause: 14
 - complement: 12
 - informal: 16
 - internet: 14
 - modal: 45
-- modifier: 93
-- negation: 12
+- modifier: 96
+- negation: 25
 - possession: 9
 - preposition: 62
-- question: 28
+- question: 36
 - regional: 4
 - slang: 35
 - unknown: 6
+
+## v1.3 additions (2026-09-25)
+
+35 cases were added covering constructions that produced garbled output
+when tested with natural (non-templated) sentences:
+
+- General imperatives with no subject at all ("Call me.", "Open the door."),
+  both plain and negated ("Don't touch grass.")
+- Existential "there is/are ..."
+- Negation of be-copula/progressive, perfect ("haven't", "have not"),
+  uncontracted modal negation ("can not"), and uncontracted do-support
+  negation ("did not", "does not") — previously only the contracted forms
+  ("don't", "can't") were handled
+- Negated fronted questions ("Isn't she happy?", "Doesn't he study?",
+  "Can't you swim?") — previously only positive fronted questions worked
+- be-fronted progressive wh-questions ("What are you doing?") and
+  have-fronted perfect questions ("Have you finished?")
+- Relative clauses modifying an object NP, not just the subject
+  ("I met the man who lives in Tokyo.")
+- Double-object (ditransitive) verbs ("Give me a book.", "I sent him a message.")
+- "or" as an object-list connector, comma-separated adjectives, "please" as
+  a droppable politeness softener, and additional frequency adverbs
+  ("never", "usually", ...) in pre-verb position
+
+Known remaining gap: compound-subject coordination ("Ken or Maria will
+come.") is not yet supported — the parser currently only handles "and"/"or"
+joining objects or full clauses, not two subjects sharing one verb.
 
 ## v1.2 additions (2026-09-25)
 

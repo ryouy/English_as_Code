@@ -1,21 +1,21 @@
 {
   "valid": true,
-  "case_count": 555,
-  "unique_inputs": 555,
+  "case_count": 590,
+  "unique_inputs": 590,
   "categories": {
-    "advanced": 10,
+    "advanced": 12,
     "ambiguity": 6,
-    "basic": 189,
+    "basic": 198,
     "clause": 14,
     "complement": 12,
     "informal": 16,
     "internet": 14,
     "modal": 45,
-    "modifier": 93,
-    "negation": 12,
+    "modifier": 96,
+    "negation": 25,
     "possession": 9,
     "preposition": 62,
-    "question": 28,
+    "question": 36,
     "regional": 4,
     "slang": 35,
     "unknown": 6
@@ -24,10 +24,10 @@
     "informal": 20,
     "internet_casual": 19,
     "slang": 35,
-    "standard": 481
+    "standard": 516
   },
   "statuses": {
-    "golden": 544,
+    "golden": 579,
     "review": 11
   },
   "checks": [

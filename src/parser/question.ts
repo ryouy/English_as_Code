@@ -1,6 +1,17 @@
 import type { SourceToken, Entity, ASTNode, Action, ModalExpression, Copula } from "../ast/types.js";
-import { WH_WORDS, ADVERBIAL_WH, DO_SUPPORT, BE_FORMS, MODALS, SUBJECT_PRONOUNS } from "../lexicon/closedClass.js";
-import { buildAction, parseClause } from "./clause.js";
+import {
+  WH_WORDS,
+  ADVERBIAL_WH,
+  DO_SUPPORT,
+  BE_FORMS,
+  MODALS,
+  SUBJECT_PRONOUNS,
+  MODAL_NEGATIVE_CONTRACTIONS,
+  BE_NEGATIVE_CONTRACTIONS,
+  DO_NEGATIVE_CONTRACTIONS,
+  isGerund,
+} from "../lexicon/closedClass.js";
+import { buildAction, buildActionOrAspect, buildProgressiveAction, parseClause } from "./clause.js";
 import { parseObjectNP } from "./np.js";
 
 function lower(t: SourceToken): string {
@@ -64,7 +75,13 @@ export function parseQuestionOrEmbedded(tokensRaw: SourceToken[], topLevelQuesti
     }
 
     let rest = afterWh;
-    if (rest.length > 0 && DO_SUPPORT.has(lower(rest[0]))) rest = rest.slice(1);
+    let auxWasBe = false;
+    if (rest.length > 0 && DO_SUPPORT.has(lower(rest[0]))) {
+      rest = rest.slice(1);
+    } else if (rest.length > 0 && BE_FORMS.has(lower(rest[0]))) {
+      auxWasBe = true;
+      rest = rest.slice(1);
+    }
     const subjTok = rest[0];
     const subject = subjTok ? resolveSimpleSubject(subjTok) : whPlaceholder(t0);
     const verbAndRest = rest.slice(1);
@@ -73,6 +90,17 @@ export function parseQuestionOrEmbedded(tokensRaw: SourceToken[], topLevelQuesti
     if (ADVERBIAL_WH.has(lw0) && verbAndRest.length === 1 && BE_FORMS.has(lower(verbAndRest[0]))) {
       const complement = { type: "Entity" as const, surface: t0.surface, render: `${lw0}=?`, kind: "wh_placeholder" as const, start: t0.start, end: t0.end };
       return { type: "Copula", subject, complement, start: t0.start, end: verbAndRest[0].end };
+    }
+
+    // "What are you doing?" -> you.doing(?) — be-fronted progressive wh-question
+    if (auxWasBe && verbAndRest.length >= 1 && isGerund(verbAndRest[0].surface) && lower(verbAndRest[0]) !== "giving") {
+      const action = buildProgressiveAction(subject, verbAndRest);
+      if (ADVERBIAL_WH.has(lw0)) {
+        action.preps.push({ type: "PrepArg", prep: lw0, value: whPlaceholder(t0), start: t0.start, end: t0.end });
+      } else {
+        action.objects.push(whPlaceholder(t0));
+      }
+      return action;
     }
 
     const action = buildAction(subject, verbAndRest);
@@ -84,29 +112,54 @@ export function parseQuestionOrEmbedded(tokensRaw: SourceToken[], topLevelQuesti
     return action;
   }
 
-  if (topLevelQuestion && (DO_SUPPORT.has(lw0) || BE_FORMS.has(lw0) || MODALS.has(lw0))) {
+  const isDoAux = DO_SUPPORT.has(lw0) || lw0 in DO_NEGATIVE_CONTRACTIONS;
+  const isBeAux = BE_FORMS.has(lw0) || lw0 in BE_NEGATIVE_CONTRACTIONS;
+  const isModalAux = MODALS.has(lw0) || lw0 in MODAL_NEGATIVE_CONTRACTIONS;
+  const isHaveAux = lw0 === "have" || lw0 === "has";
+  const negated = lw0 in DO_NEGATIVE_CONTRACTIONS || lw0 in BE_NEGATIVE_CONTRACTIONS || lw0 in MODAL_NEGATIVE_CONTRACTIONS;
+
+  if (topLevelQuestion && (isDoAux || isBeAux || isModalAux || isHaveAux)) {
     const rest = tokens.slice(1);
     const subjTok = rest[0];
     const subject = resolveSimpleSubject(subjTok);
     const afterSubject = rest.slice(1);
 
-    if (DO_SUPPORT.has(lw0)) {
-      // "Do you like coffee?" -> you.like(coffee)?
+    if (isDoAux) {
+      // "Do you like coffee?" / "Don't you like coffee?" -> you.like(coffee)?
       const action = buildAction(subject, afterSubject);
       action.isQuestion = true;
+      action.negated = negated;
       return action;
     }
 
-    if (BE_FORMS.has(lw0)) {
-      // "Are you a human?" -> you = human?
+    if (isBeAux) {
+      // "Are you a human?" / "Isn't she happy?" -> you = human? / !(she = happy)?
+      if (afterSubject.length >= 2 && isGerund(afterSubject[0].surface) && lower(afterSubject[0]) !== "giving") {
+        const action = buildProgressiveAction(subject, afterSubject);
+        action.isQuestion = true;
+        action.negated = negated;
+        return action;
+      }
       const complement = parseObjectNP(afterSubject);
-      const copula: Copula = { type: "Copula", subject, complement, isQuestion: true, start: t0.start, end: tokens[tokens.length - 1].end };
+      const copula: Copula = { type: "Copula", subject, complement, isQuestion: true, negated, start: t0.start, end: tokens[tokens.length - 1].end };
       return copula;
     }
 
-    // modal-fronted: "Can you swim?" -> can(you.swim())?
-    const inner = buildAction(subject, afterSubject);
-    const modal: ModalExpression = { type: "ModalExpression", modal: lw0, render: lw0, content: inner, isQuestion: true, start: t0.start, end: tokens[tokens.length - 1].end, keywordStart: t0.start, keywordEnd: t0.end };
+    if (isHaveAux) {
+      // "Have you finished?" -> have(you.finished())?
+      const built = buildActionOrAspect(subject, [t0, ...afterSubject]);
+      if (built.type === "ModalExpression") {
+        built.isQuestion = true;
+        return built;
+      }
+      if (built.type === "Action") built.isQuestion = true;
+      return built;
+    }
+
+    // modal-fronted (positive or negative): "Can you swim?" / "Can't you swim?"
+    const modalName = MODALS.has(lw0) ? lw0 : MODAL_NEGATIVE_CONTRACTIONS[lw0];
+    const inner = buildActionOrAspect(subject, afterSubject);
+    const modal: ModalExpression = { type: "ModalExpression", modal: modalName, render: modalName, content: inner, isQuestion: true, negated, start: t0.start, end: tokens[tokens.length - 1].end, keywordStart: t0.start, keywordEnd: t0.end };
     return modal;
   }
 

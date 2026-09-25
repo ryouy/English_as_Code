@@ -554,3 +554,38 @@ EAC-GC-0552,complement,infinitive_extraposition,It is good to see you.,it = good
 EAC-GC-0553,clause,and_vp_shared_subject,He watches TV and plays tennis.,he.watches(TV) and he.plays(tennis),"VP coordination with shared subject, -s inflected verbs",standard,high,golden,,curated|clause
 EAC-GC-0554,question,complex_wh_np,What kind of area do you like the most?,"you.like(?, adverb=most)",complex 'what kind of NOUN' wh-phrase + superlative adverbial 'the most',standard,high,golden,,curated|question
 EAC-GC-0555,question,complex_wh_np,Which kind of music do you like the most?,"you.like(?, adverb=most)",complex 'which kind of NOUN' wh-phrase + superlative adverbial 'the most',standard,high,golden,,curated|question
+EAC-GC-0556,modifier,comma_adjectives,"I bought a big, red car.","I.bought(car(adjective=[big, red]))",comma-separated adjectives,standard,high,golden,,curated|modifier
+EAC-GC-0557,basic,imperative,Call me.,call(me),"general imperative, no subject",standard,high,golden,,curated|basic
+EAC-GC-0558,basic,imperative,Open the door.,open(door),"general imperative, no subject",standard,high,golden,,curated|basic
+EAC-GC-0559,negation,imperative_negative,Don't touch grass.,!touch_grass(),"negated imperative, no subject",standard,high,golden,,curated|negation
+EAC-GC-0560,negation,imperative_negative,Don't go.,!go(),"negated imperative, no subject",standard,high,golden,,curated|negation
+EAC-GC-0561,basic,existential_there,There is a book on the table.,"there(book, on=table)",existential 'there is/are',standard,high,golden,,curated|basic
+EAC-GC-0562,basic,existential_there,There are many books on the table.,"there(books(adjective=many), on=table)",existential 'there is/are' with quantifier,standard,high,golden,,curated|basic
+EAC-GC-0563,negation,be_not,She is not happy.,!(she = happy),uncontracted be-negation (copula),standard,high,golden,,curated|negation
+EAC-GC-0564,negation,be_not,They were not ready.,!(they = ready),uncontracted be-negation (copula),standard,high,golden,,curated|negation
+EAC-GC-0565,negation,be_not_progressive,I am not studying.,!(I = studying),be-negation with a bare progressive complement,standard,high,golden,,curated|negation
+EAC-GC-0566,negation,perfect_negative,I haven't finished my homework.,!have(I.finished(my.homework)),contracted perfect negation,standard,high,golden,,curated|negation
+EAC-GC-0567,negation,perfect_negative,She has not called.,!has(she.called()),uncontracted perfect negation,standard,high,golden,,curated|negation
+EAC-GC-0568,negation,perfect_negative,They have not arrived.,!have(they.arrived()),uncontracted perfect negation,standard,high,golden,,curated|negation
+EAC-GC-0569,negation,modal_not,He can not swim.,!can(he.swim()),uncontracted modal negation,standard,high,golden,,curated|negation
+EAC-GC-0570,negation,modal_not,You should not worry.,!should(you.worry()),uncontracted modal negation,standard,high,golden,,curated|negation
+EAC-GC-0571,negation,modal_not,I will not go.,!will(I.go()),uncontracted modal negation,standard,high,golden,,curated|negation
+EAC-GC-0572,negation,do_not_uncontracted,I did not go.,!I.go(),uncontracted do-support negation (past),standard,high,golden,,curated|negation
+EAC-GC-0573,negation,do_not_uncontracted,He does not like it.,!he.like(it),uncontracted do-support negation,standard,high,golden,,curated|negation
+EAC-GC-0574,question,be_negative_yes_no,Isn't she happy?,!(she = happy)?,negated be-fronted question,standard,high,golden,,curated|question
+EAC-GC-0575,question,be_negative_yes_no,Aren't you tired?,!(you = tired)?,negated be-fronted question,standard,high,golden,,curated|question
+EAC-GC-0576,question,do_negative_yes_no,Don't you like coffee?,!you.like(coffee)?,negated do-fronted question,standard,high,golden,,curated|question
+EAC-GC-0577,question,do_negative_yes_no,Doesn't he study?,!he.study()?,negated do-fronted question,standard,high,golden,,curated|question
+EAC-GC-0578,question,modal_negative_yes_no,Can't you swim?,!can(you.swim())?,negated modal-fronted question,standard,high,golden,,curated|question
+EAC-GC-0579,question,wh_progressive,What are you doing?,you.doing(?),be-fronted progressive wh-question,standard,high,golden,,curated|question
+EAC-GC-0580,question,perfect_yes_no,Have you finished?,have(you.finished())?,have-fronted perfect question,standard,high,golden,,curated|question
+EAC-GC-0581,question,perfect_yes_no,Has she called?,has(she.called())?,have-fronted perfect question,standard,high,golden,,curated|question
+EAC-GC-0582,advanced,relative_clause_object,I met the man who lives in Tokyo.,I.met(man(who.lives(in=Tokyo))),relative clause modifying an object NP,standard,high,golden,,curated|advanced
+EAC-GC-0583,advanced,relative_clause_object,I like the book that Ken bought.,I.like(book(that=Ken.bought(?))),relative clause modifying an object NP,standard,high,golden,,curated|advanced
+EAC-GC-0584,basic,ditransitive,Give me a book.,"give(me, book)",double-object (ditransitive) imperative,standard,high,golden,,curated|basic
+EAC-GC-0585,basic,ditransitive,Tell me a story.,"tell(me, story)",double-object (ditransitive) imperative,standard,high,golden,,curated|basic
+EAC-GC-0586,basic,ditransitive,I sent him a message.,"I.sent(him, message)",double-object (ditransitive),standard,high,golden,,curated|basic
+EAC-GC-0587,basic,object_coordination,I like coffee or tea.,"I.like(coffee, tea)",'or' between two objects of one verb,standard,high,golden,,curated|basic
+EAC-GC-0588,basic,imperative_softener,Please help me.,help(me),'please' dropped as a pure politeness softener,standard,high,golden,,curated|basic
+EAC-GC-0589,modifier,frequency_adverb,Ken never studies.,Ken.studies(adverb=never),"frequency adverb, pre-verb position",standard,high,golden,,curated|modifier
+EAC-GC-0590,modifier,frequency_adverb,I usually run.,I.run(adverb=usually),"frequency adverb, pre-verb position",standard,high,golden,,curated|modifier

@@ -73,6 +73,25 @@ export const MODAL_NEGATIVE_CONTRACTIONS: Record<string, string> = {
   "mustn't": "must",
 };
 
+export const BE_NEGATIVE_CONTRACTIONS: Record<string, string> = {
+  "isn't": "is",
+  "aren't": "are",
+  "wasn't": "was",
+  "weren't": "were",
+};
+
+export const DO_NEGATIVE_CONTRACTIONS: Record<string, string> = {
+  "don't": "do",
+  "doesn't": "does",
+  "didn't": "did",
+};
+
+export const HAVE_NEGATIVE_CONTRACTIONS: Record<string, string> = {
+  "haven't": "have",
+  "hasn't": "has",
+  "hadn't": "had",
+};
+
 // Modal-like informal wrappers that take an inner action, rendered as name(subject.verb(...)).
 export const INFORMAL_MODAL_WRAPPERS: Record<string, string> = {
   gonna: "going_to",
@@ -126,6 +145,14 @@ export const KNOWN_ADVERBS = new Set([
   "totally",
   "tonight",
   "now",
+  "never",
+  "usually",
+  "rarely",
+  "seldom",
+  "frequently",
+  "occasionally",
+  "here",
+  "there",
 ]);
 
 export const ADVERB_MODIFIERS = new Set(["very", "really", "extremely", "so", "quite"]);
@@ -227,7 +254,7 @@ export function participleToActivePast(word: string): string {
 // disambiguate "determiner + NOUN" (e.g. "that joke sent me") from a bare
 // demonstrative/pronoun subject directly followed by its verb (e.g. "this
 // works") — a distinction that closed-class signals alone can't make.
-const CORPUS_VERB_BASES = [
+const CORPUS_VERB_BASE_LIST = [
   "arrive",
   "ate",
   "bought",
@@ -294,9 +321,22 @@ const CORPUS_VERB_BASES = [
   "cooked",
   "text",
   "texts",
+  "give",
+  "tell",
+  "ask",
+  "listen",
+  "look",
+  "stop",
+  "start",
+  "bring",
+  "put",
+  "turn",
+  "close",
 ];
+
+export const CORPUS_VERB_BASES = new Set(CORPUS_VERB_BASE_LIST);
 
 // Base forms plus their naive "-s" third-person inflections (e.g. play -> plays),
 // so natural sentences ("he watches TV") get recognized alongside the base forms
 // used throughout the golden corpus's questions/modals ("does he watch TV?").
-export const CORPUS_VERBS = new Set([...CORPUS_VERB_BASES, ...CORPUS_VERB_BASES.map((v) => (v.endsWith("h") || v.endsWith("s") || v.endsWith("o") ? `${v}es` : `${v}s`))]);
+export const CORPUS_VERBS = new Set([...CORPUS_VERB_BASE_LIST, ...CORPUS_VERB_BASE_LIST.map((v) => (v.endsWith("h") || v.endsWith("s") || v.endsWith("o") ? `${v}es` : `${v}s`))]);

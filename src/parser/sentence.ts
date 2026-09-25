@@ -65,7 +65,17 @@ function expandWanna(tokens: SourceToken[]): SourceToken[] {
   return out;
 }
 
-function parseTokenSequence(tokens: SourceToken[], topLevelQuestion: boolean): ASTNode {
+function parseTokenSequence(tokensIn: SourceToken[], topLevelQuestion: boolean): ASTNode {
+  // "please" is a pure politeness softener with no structural meaning to
+  // preserve in EAC notation — drop it (and an optional following comma) and
+  // parse the rest as if it weren't there.
+  let tokens = tokensIn;
+  if (tokens.length > 1 && lower(tokens[0]) === "please") {
+    tokens = tokens.slice(isComma(tokens[1]) ? 2 : 1);
+  } else if (tokens.length > 1 && lower(tokens[tokens.length - 1]) === "please") {
+    tokens = tokens.slice(0, isComma(tokens[tokens.length - 2]) ? -2 : -1);
+  }
+
   const merged = mergeMultiwordPhrases(expandWanna(tokens));
 
   const bare = bareCallIdiom(merged);
