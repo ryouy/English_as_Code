@@ -2,6 +2,8 @@
 
 英文を入力すると、その文法・依存構造をプログラミングコードのような記法で可視化する英語学習ツール。
 
+**デモ:** https://english-as-code-indol.vercel.app/
+
 ```
 I can speak English very well.
 →
@@ -17,16 +19,26 @@ can(
 
 ## 起動方法
 
-```
+Node.js と npm を用意して、以下を実行します。
+
+```bash
 npm install
 npm run dev:api
 ```
 
 `http://localhost:4173` を開く。英文を入力して「Analyze」を押すと、English/Codeパネルとインスペクターが表示される。Simple / Structure / Grammar の表示モード切り替えあり。
 
+TypeScript のコンパイルだけを実行したい場合:
+
+```bash
+npm run build
+```
+
+`dev:api` は TypeScript をコンパイルしてから Express API サーバーを起動します。
+
 ## テスト
 
-```
+```bash
 npm run golden
 ```
 
